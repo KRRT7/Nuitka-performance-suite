@@ -8,6 +8,7 @@ import io
 import os.path
 
 import html5lib
+
 # import pyperf
 
 

@@ -42,6 +42,7 @@
 # Python imports
 import re
 from time import perf_counter
+
 # Third party imports
 # import pyperf
 

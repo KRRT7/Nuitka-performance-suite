@@ -1,11 +1,11 @@
-from rich import print
-from rich.table import Table
-from rich.panel import Panel
+from __future__ import annotations
+
 from rich.align import Align
-from rich.console import Group
-from rich.console import Console
-from Utilities import get_visualizer_setup, centered_text
-from rich.terminal_theme import SVG_EXPORT_THEME
+from rich.console import Console, Group
+from rich.panel import Panel
+from rich.table import Table
+from rich.theme import 
+from benchengine import CURRENT_PLATFORM, PLATFORM_EMOJI, Benchmark, centered_text, get_visualizer_setup
 
 console = Console(record=True)
 
@@ -20,38 +20,32 @@ def build_table() -> Table:
 
     return table
 
-
-dates: dict[str, list[Table]] = {}
-# for name, date, benchmarks in get_visualizer_setup():
-for name, date, benchmarks in get_visualizer_setup():
+def build_group_table(benchmarks: list[Benchmark]) -> Table:
     table = build_table()
 
-    for benchmark in benchmarks:
-        nuitka_stats = benchmark.calculate_stats("nuitka")
-        cpython_stats = benchmark.calculate_stats("cpython")
+    for version in benchmarks:
+        nuitka_stats = version.calculate_stats("nuitka")
+        cpython_stats = version.calculate_stats("cpython")
         factory_stats = (
-            benchmark.factory.format_stats()
-            if benchmark.factory
+            version.factory.format_stats()
+            if version.factory
             else centered_text("N/A")
         )
-        table.title = name
         table.add_row(
-            centered_text(benchmark.py_version),
+            centered_text(version.normalized_python_version),
             centered_text(f"{cpython_stats:.2f}"),
             centered_text(f"{nuitka_stats:.2f}"),
-            benchmark.format_stats(),
+            version.format_stats(),
             factory_stats,
         )
+    return table
 
-    dates.setdefault(date, []).append(table)
-if not dates:
-    raise SystemExit("No data to visualize")
+to_visualize = []
+to_visualize.append(Panel(centered_text(f"{PLATFORM_EMOJI} {CURRENT_PLATFORM} {PLATFORM_EMOJI}")))
 
-grid = Table.grid(expand=True)
-rows = []
-for date, tables in dates.items():
-    rows.append(Panel(Group(*tables), title=date, expand=False))
-grid.add_row(*rows[-3:])
+for name, benchmarks in get_visualizer_setup():
+    table = build_group_table(benchmarks)
+    to_visualize.append(Panel(table, title=name))
 
-console.print(Align.center(grid))
-console.save_svg("test.svg")
+console.print(Align.center(Panel(Group(*to_visualize))))
+console.save_svg(f"results/{CURRENT_PLATFORM}_benchmarks.svg")

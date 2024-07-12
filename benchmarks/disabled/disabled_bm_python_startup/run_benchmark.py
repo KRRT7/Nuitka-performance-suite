@@ -43,5 +43,3 @@ if __name__ == "__main__":
     p.communicate()
     if p.returncode != 0:
         sys.exit("Process failed with return code %d" % p.returncode)
-    
-    

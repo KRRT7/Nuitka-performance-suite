@@ -1,0 +1,21 @@
+[[tool.hatch.envs.main.matrix]]
+python = ["3.11", "3.10", "3.9", "3.8"]
+nuitka = ["standard"]
+
+[tool.hatch.envs.main.overrides]
+matrix.nuitka.dependencies = [
+    {value = "nuitka", if = ["standard"]},
+    {value = "nuitka @ https://github.com/Nuitka/Nuitka/archive/factory.zip", if = ["factory"]},
+]
+
+[tool.hatch.envs.main]
+dev-mode = false
+skip-install = true
+python-sources = ["external"]
+dependencies = ["rich"]
+
+[tool.hatch.envs.main.scripts]
+hello = "python -m pip install --upgrade pip && python main.py {matrix:python} {matrix:nuitka}"
+
+[tool.ruff]
+exclude = ["benchmarks*/"]

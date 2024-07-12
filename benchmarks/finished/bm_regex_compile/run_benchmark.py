@@ -12,6 +12,7 @@ import re
 # import pyperf
 from time import perf_counter
 
+
 def capture_regexes():
     regexes = []
 
