@@ -75,7 +75,8 @@ class Benchmark:
     def from_path(cls, file_path: Path, benchmark_name: str) -> Benchmark:
 
         if not file_path.stat().st_size > 0:
-            raise FileNotFoundError(f"File {file_path} does not exist or is empty")
+            msg = f"File {file_path} does not exist or is empty"
+            raise FileNotFoundError(msg)
 
         with open(file_path) as f:
             file_json = load(f)

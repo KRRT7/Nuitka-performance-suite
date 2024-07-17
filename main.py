@@ -44,7 +44,7 @@ def main(python_version, nuitka_version):
         results_file.touch(exist_ok=True)
 
         bench_result = Benchmark(
-            nuitka_version=nuitka_version, benchmark_name=benchmark.name
+            nuitka_version=nuitka_version, name=benchmark.name
         )
 
         with temporary_directory_change(benchmark):

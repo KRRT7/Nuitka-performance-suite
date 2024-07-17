@@ -4,7 +4,9 @@ from rich.align import Align
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
-from benchengine import CURRENT_PLATFORM, PLATFORM_EMOJI, Benchmark, centered_text, get_visualizer_setup, CONSOLE_HTML_FORMAT
+
+from benchengine import CURRENT_PLATFORM, PLATFORM_EMOJI, Benchmark, centered_text, get_visualizer_setup
+
 console = Console(record=True)
 
 
