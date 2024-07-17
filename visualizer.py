@@ -4,9 +4,7 @@ from rich.align import Align
 from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
-from rich.theme import 
-from benchengine import CURRENT_PLATFORM, PLATFORM_EMOJI, Benchmark, centered_text, get_visualizer_setup
-
+from benchengine import CURRENT_PLATFORM, PLATFORM_EMOJI, Benchmark, centered_text, get_visualizer_setup, CONSOLE_HTML_FORMAT
 console = Console(record=True)
 
 
@@ -48,4 +46,4 @@ for name, benchmarks in get_visualizer_setup():
     to_visualize.append(Panel(table, title=name))
 
 console.print(Align.center(Panel(Group(*to_visualize))))
-console.save_svg(f"results/{CURRENT_PLATFORM}_benchmarks.svg")
+console.save_svg(f"results/{CURRENT_PLATFORM}_benchmarks.html", code_format=CONSOLE_HTML_FORMAT)
