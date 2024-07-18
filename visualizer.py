@@ -48,4 +48,4 @@ for name, benchmarks in get_visualizer_setup():
     to_visualize.append(Panel(table, title=name))
 
 console.print(Align.center(Panel(Group(*to_visualize))))
-console.save_svg(f"results/{CURRENT_PLATFORM}_benchmarks.html")
+console.save_svg(f"results/{CURRENT_PLATFORM}_benchmarks.svg")
