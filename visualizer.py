@@ -5,7 +5,13 @@ from rich.console import Console, Group
 from rich.panel import Panel
 from rich.table import Table
 
-from benchengine import CURRENT_PLATFORM, PLATFORM_EMOJI, Benchmark, centered_text, get_visualizer_setup
+from benchengine import (
+    CURRENT_PLATFORM,
+    PLATFORM_EMOJI,
+    Benchmark,
+    centered_text,
+    get_visualizer_setup,
+)
 
 console = Console(record=True)
 
@@ -20,6 +26,7 @@ def build_table() -> Table:
 
     return table
 
+
 def build_group_table(benchmarks: list[Benchmark]) -> Table:
     table = build_table()
 
@@ -27,9 +34,7 @@ def build_group_table(benchmarks: list[Benchmark]) -> Table:
         nuitka_stats = version.calculate_stats("nuitka")
         cpython_stats = version.calculate_stats("cpython")
         factory_stats = (
-            version.factory.format_stats()
-            if version.factory
-            else centered_text("N/A")
+            version.factory.format_stats() if version.factory else centered_text("N/A")
         )
         table.add_row(
             centered_text(version.normalized_python_version),
@@ -40,8 +45,11 @@ def build_group_table(benchmarks: list[Benchmark]) -> Table:
         )
     return table
 
+
 to_visualize = []
-to_visualize.append(Panel(centered_text(f"{PLATFORM_EMOJI} {CURRENT_PLATFORM} {PLATFORM_EMOJI}")))
+to_visualize.append(
+    Panel(centered_text(f"{PLATFORM_EMOJI} {CURRENT_PLATFORM} {PLATFORM_EMOJI}"))
+)
 
 for name, benchmarks in get_visualizer_setup():
     table = build_group_table(benchmarks)

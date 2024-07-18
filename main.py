@@ -1,6 +1,5 @@
 import shutil
 import sys
-from datetime import datetime
 
 from rich import print
 
@@ -18,14 +17,12 @@ from benchengine import (
 ITERATIONS = 100
 
 
-def main(python_version, nuitka_version):
+def main(python_version: str, nuitka_version: str) -> None:
     benchmarks = get_benchmark_setup()
     counter, len_benchmarks = 0, len(benchmarks)
     for benchmark in benchmarks:
         orig_path = benchmark.resolve()
 
-        results_dir = orig_path / "results" / datetime.now().strftime("%Y-%m-%d")
-        # results_dir = orig_path / "results" / datetime.now().strftime("%Y-%m-%d")
         results_dir = orig_path / "results"
         results_file = (
             results_dir
@@ -43,9 +40,7 @@ def main(python_version, nuitka_version):
             results_dir.mkdir(parents=True, exist_ok=True)
         results_file.touch(exist_ok=True)
 
-        bench_result = Benchmark(
-            nuitka_version=nuitka_version, name=benchmark.name
-        )
+        bench_result = Benchmark(nuitka_version=nuitka_version, name=benchmark.name)
 
         with temporary_directory_change(benchmark):
             requirements_path = orig_path / "requirements.txt"
@@ -108,8 +103,7 @@ def main(python_version, nuitka_version):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python main.py <python_version> <nuitka_version>")
-        sys.exit(1)
+        raise ValueError("Usage: python main.py <python_version> <nuitka_version>")
 
     python_version = sys.argv[1]
     nuitka_version = sys.argv[2]

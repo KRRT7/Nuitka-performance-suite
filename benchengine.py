@@ -29,6 +29,8 @@ PYTHON_VERSION: tuple[int, int] = sys.version_info[:2]
 NORMALIZED_PYTHON_VERSION = f"{PYTHON_VERSION[0]}.{PYTHON_VERSION[1]}"
 BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks"
 TEST_BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks_test"
+
+
 def centered_text(text: str) -> Align:
     return Align.center(Text(text))
 
@@ -65,10 +67,15 @@ class Benchmark:
     @staticmethod
     def parse_file_name(file_name: str) -> tuple[str, str, tuple[int, int]]:
         platform, version, nuitka_version = file_name.split("-")
-        return platform, nuitka_version, tuple(map(int, version.split(".")))
+        _pyver_split = version.split(".")
+        return platform, version, (int(_pyver_split[0]), int(_pyver_split[1]))
+
 
     @property
     def normalized_python_version(self) -> str:
+        if not self.python_version:
+            msg = "Python version not found"
+            raise ValueError(msg)
         return f"{self.python_version[0]}.{self.python_version[1]}"
 
     @classmethod
@@ -91,8 +98,6 @@ class Benchmark:
         benchmark.parse_stats(file_json)
 
         return benchmark
-
-
 
     def to_json_file(self, file_path: Path) -> None:
 
@@ -132,7 +137,6 @@ class Benchmark:
         benchmark = mean(stats.benchmark[is_benchmark_skewed:])
 
         return min(warmup, benchmark)
-
 
     def format_stats(self) -> Align:
         nuitka_stats = self.calculate_stats("nuitka")
@@ -234,9 +238,7 @@ def run_benchmark(
             res = run(run_command[type], check=False)  # type: ignore
             if res.returncode != 0:
                 msg = f"Failed to run benchmark {benchmark.name} due to {res.stderr!r}"
-                raise RuntimeError(
-                    msg
-                )
+                raise RuntimeError(msg)
 
         local_results["warmup"].append(timer.time_taken)
 
@@ -274,11 +276,11 @@ def _get_benchmarks(test: bool = False) -> Iterator[Path]:
 def get_visualizer_setup(
     test: bool = False,
 ) -> Generator[tuple[str, list[Benchmark]], None, None]:
-    for benchmark in _get_benchmarks(test=test):
-        results_dir = benchmark / "results"
+    for _benchmark in _get_benchmarks(test=test):
+        results_dir = _benchmark / "results"
         if not results_dir.exists():
             print(
-                f"Skipping benchmark {benchmark.name}, because {results_dir} does not exist"
+                f"Skipping benchmark {_benchmark.name}, because {results_dir} does not exist"
             )
             continue
 
@@ -287,7 +289,7 @@ def get_visualizer_setup(
         for result in results_dir.iterdir():
             if result.is_file():
                 try:
-                    benchmark = Benchmark.from_path(result, benchmark.name)
+                    benchmark = Benchmark.from_path(result, _benchmark.name)
                 except FileNotFoundError as e:
                     print(e)
                     continue
@@ -295,7 +297,6 @@ def get_visualizer_setup(
         benchmark_case_group.sort(key=lambda x: x.python_version, reverse=True)
 
         yield benchmark.name, benchmark_case_group
-
 
 
 def get_benchmark_setup() -> list[Path]:
@@ -328,6 +329,6 @@ def setup_benchmark_enviroment(
 
     except Exception as e:
         msg = f"Failed to setup benchmark enviroment\n{e}"
-        raise RuntimeError(msg)
+        raise RuntimeError(msg) from e
 
     return python_executable
