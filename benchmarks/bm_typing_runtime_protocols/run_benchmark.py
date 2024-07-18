@@ -26,7 +26,7 @@ so are also tested separately.
 import time
 from typing import Protocol, runtime_checkable
 
-import pyperf
+# import pyperf
 
 
 ##################################################
@@ -237,9 +237,11 @@ def bench_protocols(loops: int) -> float:
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner()
-    runner.metadata["description"] = (
-        "Test the performance of isinstance() checks "
-        "against runtime-checkable protocols"
-    )
-    runner.bench_time_func("typing_runtime_protocols", bench_protocols)
+    # runner = pyperf.Runner()
+    # runner.metadata["description"] = (
+    #     "Test the performance of isinstance() checks "
+    #     "against runtime-checkable protocols"
+    # )
+    # runner.bench_time_func("typing_runtime_protocols", bench_protocols)
+
+    bench_protocols(1600)

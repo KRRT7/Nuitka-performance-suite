@@ -13,7 +13,8 @@ import sys
 import tempfile
 from collections import defaultdict
 
-import pyperf
+# import pyperf
+from time import perf_counter
 
 
 __author__ = "stefan_ml@behnel.de (Stefan Behnel)"
@@ -179,12 +180,14 @@ def bench_etree(iterations, etree, bench_func):
     try:
         etree.ElementTree(xml_root).write(file_path)
 
-        t0 = pyperf.perf_counter()
+        # t0 = pyperf.perf_counter()
+        t0 = perf_counter()
 
         for _ in range(iterations):
             bench_func(etree, file_path, xml_data, xml_root)
 
-        dt = pyperf.perf_counter() - t0
+        # dt = pyperf.perf_counter() - t0
+        dt = perf_counter() - t0
     finally:
         try:
             os.close(tf)
@@ -212,86 +215,89 @@ def add_cmdline_args(cmd, args):
 if __name__ == "__main__":
     # On Python 3, xml.etree.cElementTree is a deprecated alias
     # to xml.etree.ElementTree
-    default_etmodule = "xml.etree.ElementTree"
+    # default_etmodule = "xml.etree.ElementTree"
+    import xml.etree.ElementTree as et
 
-    runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
-    runner.metadata["description"] = (
-        "Test the performance of " "ElementTree XML processing."
-    )
+    # runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
+    # runner.metadata["description"] = (
+    #     "Test the performance of " "ElementTree XML processing."
+    # )
 
-    parser = runner.argparser
-    parser.add_argument(
-        "--etree-module",
-        default=None,
-        metavar="FQMN",
-        help="Select an ElementTree module to use "
-        "(fully qualified module name). "
-        "Default is '%s'" % default_etmodule,
-    )
-    parser.add_argument(
-        "--no-accelerator",
-        action="store_true",
-        default=False,
-        help="Disable the '_elementree' accelerator module " "for ElementTree.",
-    )
-    parser.add_argument("benchmark", nargs="?", choices=BENCHMARKS)
+    # parser = runner.argparser
+    # parser.add_argument(
+    #     "--etree-module",
+    #     default=None,
+    #     metavar="FQMN",
+    #     help="Select an ElementTree module to use "
+    #     "(fully qualified module name). "
+    #     "Default is '%s'" % default_etmodule,
+    # )
+    # parser.add_argument(
+    #     "--no-accelerator",
+    #     action="store_true",
+    #     default=False,
+    #     help="Disable the '_elementree' accelerator module " "for ElementTree.",
+    # )
+    # parser.add_argument("benchmark", nargs="?", choices=BENCHMARKS)
 
-    options = runner.parse_args()
+    # options = runner.parse_args()
 
-    if not options.etree_module:
-        if options.no_accelerator:
-            options.etree_module = FALLBACK_ETMODULE
-        else:
-            options.etree_module = default_etmodule
-    if options.no_accelerator:
-        # prevent C accelerator from being used in 3.3
-        sys.modules["_elementtree"] = None
-        import xml.etree.ElementTree as et
+    # if not options.etree_module:
+    #     if options.no_accelerator:
+    #         options.etree_module = FALLBACK_ETMODULE
+    #     else:
+    #         options.etree_module = default_etmodule
+    # if options.no_accelerator:
+    #     # prevent C accelerator from being used in 3.3
+    #     sys.modules["_elementtree"] = None
+    #     import xml.etree.ElementTree as et
 
-        if et.SubElement.__module__ != "xml.etree.ElementTree":
-            raise RuntimeError("Unexpected C accelerator for ElementTree")
+    #     if et.SubElement.__module__ != "xml.etree.ElementTree":
+    #         raise RuntimeError("Unexpected C accelerator for ElementTree")
 
-    try:
-        from importlib import import_module
-    except ImportError:
+    # try:
+    #     from importlib import import_module
+    # except ImportError:
 
-        def import_module(module_name):
-            __import__(module_name)
-            return sys.modules[module_name]
+    #     def import_module(module_name):
+    #         __import__(module_name)
+    #         return sys.modules[module_name]
 
-    try:
-        etree_module = import_module(options.etree_module)
-    except ImportError:
-        if options.etree_module != default_etmodule:
-            raise
-        etree_module = import_module(FALLBACK_ETMODULE)
+    # try:
+    #     etree_module = import_module(options.etree_module)
+    # except ImportError:
+    #     if options.etree_module != default_etmodule:
+    #         raise
+    #     etree_module = import_module(FALLBACK_ETMODULE)
 
     # Fill elementtree_module metadata: check if the accelerator is used
-    module = etree_module.__name__
-    # xml.etree.ElementTree._Element_Py was added to Python 3.4
-    if hasattr(etree_module, "_Element_Py"):
-        accelerator = etree_module.Element is not etree_module._Element_Py
-    else:
-        if options.no_accelerator:
-            accelerator = False
-        else:
-            accelerator = True
-    if accelerator:
-        module += " (with C accelerator)"
-    else:
-        module += " (pure Python)"
-    runner.metadata["elementtree_module"] = module
+    # module = etree_module.__name__
+    # # xml.etree.ElementTree._Element_Py was added to Python 3.4
+    # if hasattr(etree_module, "_Element_Py"):
+    #     accelerator = etree_module.Element is not etree_module._Element_Py
+    # else:
+    #     if options.no_accelerator:
+    #         accelerator = False
+    #     else:
+    #         accelerator = True
+    # if accelerator:
+    #     module += " (with C accelerator)"
+    # else:
+    #     module += " (pure Python)"
+    # runner.metadata["elementtree_module"] = module
 
-    if options.benchmark:
-        benchmarks = (options.benchmark,)
-    else:
-        benchmarks = BENCHMARKS
+    # if options.benchmark:
+    #     benchmarks = (options.benchmark,)
+    # else:
+    benchmarks = BENCHMARKS
 
     # Run the benchmark
     for bench in benchmarks:
-        if accelerator:
-            name = "xml_etree_%s" % bench
-        else:
-            name = "xml_etree_pure_python_%s" % bench
+        # if accelerator:
+        name = "xml_etree_%s" % bench
+        # else:
+        #     name = "xml_etree_pure_python_%s" % bench
         bench_func = globals()["bench_%s" % bench]
-        runner.bench_time_func(name, bench_etree, etree_module, bench_func)
+        # runner.bench_time_func(name, bench_etree, etree_module, bench_func)
+        iterations = 2
+        dt = bench_etree(iterations, et, bench_func)

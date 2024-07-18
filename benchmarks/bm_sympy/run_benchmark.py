@@ -1,4 +1,5 @@
-import pyperf
+# import pyperf
+from time import perf_counter
 
 from sympy import expand, symbols, integrate, tan, summation
 from sympy.core.cache import clear_cache
@@ -26,7 +27,8 @@ def bench_str():
 
 
 def bench_sympy(loops, func):
-    timer = pyperf.perf_counter
+    # timer = pyperf.perf_counter
+    timer = perf_counter
     dt = 0
 
     for _ in range(loops):
@@ -49,21 +51,22 @@ def add_cmdline_args(cmd, args):
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
-    runner.metadata["description"] = "SymPy benchmark"
-    runner.argparser.add_argument("benchmark", nargs="?", choices=BENCHMARKS)
+    # runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
+    # runner.metadata["description"] = "SymPy benchmark"
+    # runner.argparser.add_argument("benchmark", nargs="?", choices=BENCHMARKS)
 
     import gc
 
     gc.disable()
 
-    args = runner.parse_args()
-    if args.benchmark:
-        benchmarks = (args.benchmark,)
-    else:
-        benchmarks = BENCHMARKS
+    # args = runner.parse_args()
+    # if args.benchmark:
+    #     benchmarks = (args.benchmark,)
+    # else:
+    benchmarks = BENCHMARKS
 
     for bench in benchmarks:
         name = "sympy_%s" % bench
         func = globals()["bench_" + bench]
-        runner.bench_time_func(name, bench_sympy, func)
+        # runner.bench_time_func(name, bench_sympy, func)
+        bench_sympy(1, func)

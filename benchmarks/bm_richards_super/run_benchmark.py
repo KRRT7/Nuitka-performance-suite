@@ -10,7 +10,7 @@ based on a Java version:
  super() usage added by Carl Meyer
 """
 
-import pyperf
+# import pyperf
 
 
 # Task IDs
@@ -428,8 +428,9 @@ class Richards:
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner()
-    runner.metadata["description"] = "The Richards benchmark, with super()"
+    # runner = pyperf.Runner()
+    # runner.metadata["description"] = "The Richards benchmark, with super()"
 
     richard = Richards()
-    runner.bench_func("richards_super", richard.run, 1)
+    # runner.bench_func("richards_super", richard.run, 1)
+    richard.run(16)

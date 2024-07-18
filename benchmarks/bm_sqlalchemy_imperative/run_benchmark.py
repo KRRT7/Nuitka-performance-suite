@@ -1,4 +1,5 @@
-import pyperf
+# import pyperf
+from time import perf_counter
 
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, MetaData
 from sqlalchemy.orm import sessionmaker
@@ -61,7 +62,8 @@ def bench_sqlalchemy(loops, npeople):
         cur.execute()
 
         # Run the benchmark once
-        t0 = pyperf.perf_counter()
+        # t0 = pyperf.perf_counter()
+        t0 = perf_counter()
 
         for i in range(npeople):
             # Insert a Person in the person table
@@ -77,7 +79,8 @@ def bench_sqlalchemy(loops, npeople):
             cur = Person.select()
             cur.execute()
 
-        total_dt += pyperf.perf_counter() - t0
+        # total_dt += pyperf.perf_counter() - t0
+        total_dt += perf_counter() - t0
 
     return total_dt
 
@@ -87,11 +90,12 @@ def add_cmdline_args(cmd, args):
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
-    runner.metadata["description"] = "SQLAlchemy Imperative benchmark " "using SQLite"
-    runner.argparser.add_argument(
-        "--rows", type=int, default=100, help="Number of rows (default: 100)"
-    )
+    # runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
+    # runner.metadata["description"] = "SQLAlchemy Imperative benchmark " "using SQLite"
+    # runner.argparser.add_argument(
+    #     "--rows", type=int, default=100, help="Number of rows (default: 100)"
+    # )
 
-    args = runner.parse_args()
-    runner.bench_time_func("sqlalchemy_imperative", bench_sqlalchemy, args.rows)
+    # args = runner.parse_args()
+    # runner.bench_time_func("sqlalchemy_imperative", bench_sqlalchemy, args.rows)
+    bench_sqlalchemy(6, 600)

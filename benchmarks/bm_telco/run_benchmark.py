@@ -20,7 +20,8 @@ import io
 import os
 from struct import unpack
 
-import pyperf
+# import pyperf
+from time import perf_counter
 
 
 def rel_path(*path):
@@ -41,7 +42,8 @@ def bench_telco(loops, filename):
     infil = io.BytesIO(data)
     outfil = io.StringIO()
 
-    start = pyperf.perf_counter()
+    # start = pyperf.perf_counter()
+    start = perf_counter()
     for _ in range(loops):
         infil.seek(0)
 
@@ -78,12 +80,17 @@ def bench_telco(loops, filename):
         outfil.seek(0)
         outfil.truncate()
 
-    return pyperf.perf_counter() - start
+    # return pyperf.perf_counter() - start
+    return perf_counter() - start
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner()
-    runner.metadata["description"] = "Telco decimal benchmark"
+    # runner = pyperf.Runner()
+    # runner.metadata["description"] = "Telco decimal benchmark"
 
+    # filename = rel_path("data", "telco-bench.b")
+    # runner.bench_time_func("telco", bench_telco, filename)
+
+    loops = 150
     filename = rel_path("data", "telco-bench.b")
-    runner.bench_time_func("telco", bench_telco, filename)
+    bench_telco(loops, filename)

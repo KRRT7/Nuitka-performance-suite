@@ -16,10 +16,7 @@ https://mail.python.org/pipermail/speed/2017-May/000576.html
 # Python imports
 import io
 import logging
-
-# Third party imports
-import pyperf
-
+from time import perf_counter
 # A simple format for parametered logging
 FORMAT = "important: %s"
 MESSAGE = "some important information to be logged"
@@ -36,7 +33,8 @@ def bench_silent(loops, logger, stream):
     # micro-optimization: use fast local variables
     m = MESSAGE
     range_it = range(loops)
-    t0 = pyperf.perf_counter()
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     for _ in range_it:
         # repeat 10 times
@@ -51,7 +49,8 @@ def bench_silent(loops, logger, stream):
         logger.debug(m)
         logger.debug(m)
 
-    dt = pyperf.perf_counter() - t0
+    # dt = pyperf.perf_counter() - t0
+    dt = perf_counter() - t0
 
     if len(stream.getvalue()) != 0:
         raise ValueError("stream is expected to be empty")
@@ -65,7 +64,8 @@ def bench_simple_output(loops, logger, stream):
     # micro-optimization: use fast local variables
     m = MESSAGE
     range_it = range(loops)
-    t0 = pyperf.perf_counter()
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     for _ in range_it:
         # repeat 10 times
@@ -80,7 +80,8 @@ def bench_simple_output(loops, logger, stream):
         logger.warning(m)
         logger.warning(m)
 
-    dt = pyperf.perf_counter() - t0
+    # dt = pyperf.perf_counter() - t0
+    dt = perf_counter() - t0
 
     lines = stream.getvalue().splitlines()
     if len(lines) != loops * 10:
@@ -96,7 +97,8 @@ def bench_formatted_output(loops, logger, stream):
     fmt = FORMAT
     msg = MESSAGE
     range_it = range(loops)
-    t0 = pyperf.perf_counter()
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     for _ in range_it:
         # repeat 10 times
@@ -111,7 +113,8 @@ def bench_formatted_output(loops, logger, stream):
         logger.warning(fmt, msg)
         logger.warning(fmt, msg)
 
-    dt = pyperf.perf_counter() - t0
+    # dt = pyperf.perf_counter() - t0
+    dt = perf_counter() - t0
 
     lines = stream.getvalue().splitlines()
     if len(lines) != loops * 10:
@@ -133,13 +136,13 @@ BENCHMARKS = {
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
-    runner.metadata["description"] = "Test the performance of logging."
+    # runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
+    # runner.metadata["description"] = "Test the performance of logging."
 
-    parser = runner.argparser
-    parser.add_argument("benchmark", nargs="?", choices=sorted(BENCHMARKS))
+    # parser = runner.argparser
+    # parser.add_argument("benchmark", nargs="?", choices=sorted(BENCHMARKS))
 
-    options = runner.parse_args()
+    # options = runner.parse_args()
 
     # NOTE: StringIO performance will impact the results...
     stream = io.StringIO()
@@ -150,13 +153,17 @@ if __name__ == "__main__":
     logger.addHandler(handler)
     logger.setLevel(logging.WARNING)
 
-    if options.benchmark:
-        benchmarks = (options.benchmark,)
-    else:
-        benchmarks = sorted(BENCHMARKS)
+    # if options.benchmark:
+    #     benchmarks = (options.benchmark,)
+    # else:
+    benchmarks = sorted(BENCHMARKS)
 
     for bench in benchmarks:
         name = "logging_%s" % bench
         bench_func = BENCHMARKS[bench]
 
-        runner.bench_time_func(name, bench_func, logger, stream, inner_loops=10)
+        # runner.bench_time_func(name, bench_func, logger, stream, inner_loops=10)
+        loops = 4000
+
+        dt = bench_func(loops, logger, stream)
+        

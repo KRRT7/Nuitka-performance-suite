@@ -691,4 +691,4 @@ if __name__ == "__main__":
 
     # runner.bench_time_func("hexiom", main, args.level)
 
-    main(1, 36)
+    main(4, 30)

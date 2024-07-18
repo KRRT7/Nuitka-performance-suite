@@ -15,9 +15,9 @@ import datetime
 import random
 import sys
 
-import pyperf
-
-IS_PYPY = pyperf.python_implementation() == "pypy"
+# import pyperf
+from time import perf_counter
+# IS_PYPY = pyperf.python_implementation() == "pypy"
 
 __author__ = "collinwinter@google.com (Collin Winter)"
 
@@ -104,8 +104,10 @@ def bench_pickle(loops, pickle, options):
     # micro-optimization: use fast local variables
     dumps = pickle.dumps
     objs = (DICT, TUPLE, DICT_GROUP)
-    protocol = options.protocol
-    t0 = pyperf.perf_counter()
+    # protocol = options.protocol
+    protocol = 4
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     for _ in range_it:
         for obj in objs:
@@ -131,20 +133,25 @@ def bench_pickle(loops, pickle, options):
             dumps(obj, protocol)
             dumps(obj, protocol)
 
-    return pyperf.perf_counter() - t0
+    # return pyperf.perf_counter() - t0
+    return perf_counter() - t0
 
 
 def bench_unpickle(loops, pickle, options):
-    pickled_dict = pickle.dumps(DICT, options.protocol)
-    pickled_tuple = pickle.dumps(TUPLE, options.protocol)
-    pickled_dict_group = pickle.dumps(DICT_GROUP, options.protocol)
+    # pickled_dict = pickle.dumps(DICT, options.protocol)
+    pickled_tuple = pickle.dumps(TUPLE, 4)
+    # pickled_tuple = pickle.dumps(TUPLE, options.protocol)
+    pickled_dict_group = pickle.dumps(DICT_GROUP, 4)
+    # pickled_dict_group = pickle.dumps(DICT_GROUP, options.protocol)
+    pickled_dict = pickle.dumps(DICT, 4)
     range_it = range(loops)
 
     # micro-optimization: use fast local variables
     loads = pickle.loads
     objs = (pickled_dict, pickled_tuple, pickled_dict_group)
 
-    t0 = pyperf.perf_counter()
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
     for _ in range_it:
         for obj in objs:
             # 20 loads dict
@@ -169,7 +176,8 @@ def bench_unpickle(loops, pickle, options):
             loads(obj)
             loads(obj)
 
-    return pyperf.perf_counter() - t0
+    # return pyperf.perf_counter() - t0
+    return perf_counter() - t0
 
 
 LIST = [[list(range(10)), list(range(10))] for _ in range(10)]
@@ -180,8 +188,10 @@ def bench_pickle_list(loops, pickle, options):
     # micro-optimization: use fast local variables
     dumps = pickle.dumps
     obj = LIST
-    protocol = options.protocol
-    t0 = pyperf.perf_counter()
+    # protocol = options.protocol
+    protocol = 4
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     for _ in range_it:
         # 10 dumps list
@@ -196,16 +206,19 @@ def bench_pickle_list(loops, pickle, options):
         dumps(obj, protocol)
         dumps(obj, protocol)
 
-    return pyperf.perf_counter() - t0
+    # return pyperf.perf_counter() - t0
+    return perf_counter() - t0
 
 
 def bench_unpickle_list(loops, pickle, options):
-    pickled_list = pickle.dumps(LIST, options.protocol)
+    # pickled_list = pickle.dumps(LIST, options.protocol)
+    pickled_list = pickle.dumps(LIST, 4)
     range_it = range(loops)
 
     # micro-optimization: use fast local variables
     loads = pickle.loads
-    t0 = pyperf.perf_counter()
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     for _ in range_it:
         # 10 loads list
@@ -220,7 +233,8 @@ def bench_unpickle_list(loops, pickle, options):
         loads(pickled_list)
         loads(pickled_list)
 
-    return pyperf.perf_counter() - t0
+    # return pyperf.perf_counter() - t0
+    return perf_counter() - t0
 
 
 MICRO_DICT = dict((key, dict.fromkeys(range(10))) for key in range(100))
@@ -229,9 +243,11 @@ MICRO_DICT = dict((key, dict.fromkeys(range(10))) for key in range(100))
 def bench_pickle_dict(loops, pickle, options):
     range_it = range(loops)
     # micro-optimization: use fast local variables
-    protocol = options.protocol
+    # protocol = options.protocol
+    protocol = 4
     obj = MICRO_DICT
-    t0 = pyperf.perf_counter()
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     for _ in range_it:
         # 5 dumps dict
@@ -241,7 +257,8 @@ def bench_pickle_dict(loops, pickle, options):
         pickle.dumps(obj, protocol)
         pickle.dumps(obj, protocol)
 
-    return pyperf.perf_counter() - t0
+    # return pyperf.perf_counter() - t0
+    return perf_counter() - t0
 
 
 BENCHMARKS = {
@@ -267,46 +284,51 @@ def add_cmdline_args(cmd, args):
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
-    runner.metadata["description"] = "Test the performance of pickling."
+    # runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
+    # runner.metadata["description"] = "Test the performance of pickling."
 
-    parser = runner.argparser
-    parser.add_argument(
-        "--pure-python", action="store_true", help="Use the C version of pickle."
-    )
-    parser.add_argument(
-        "--protocol",
-        action="store",
-        default=None,
-        type=int,
-        help="Which protocol to use (default: highest protocol).",
-    )
+    # parser = runner.argparser
+    # parser.add_argument(
+    #     "--pure-python", action="store_true", help="Use the C version of pickle."
+    # )
+    # parser.add_argument(
+    #     "--protocol",
+    #     action="store",
+    #     default=None,
+    #     type=int,
+    #     help="Which protocol to use (default: highest protocol).",
+    # )
     benchmarks = sorted(BENCHMARKS)
-    parser.add_argument("benchmark", choices=benchmarks)
+    # # parser.add_argument("benchmark", choices=benchmarks)
 
-    options = runner.parse_args()
-    benchmark, inner_loops = BENCHMARKS[options.benchmark]
+    # # options = runner.parse_args()
+    # benchmark, inner_loops = BENCHMARKS[options.benchmark]
 
-    name = options.benchmark
-    if options.pure_python:
-        name += "_pure_python"
+    # name = options.benchmark
+    # if options.pure_python:
+    #     name += "_pure_python"
 
-    if not (options.pure_python or IS_PYPY):
-        # C accelerators are enabled by default on 3.x
-        import pickle
+    # if not (options.pure_python or IS_PYPY):
+    #     # C accelerators are enabled by default on 3.x
+    #     import pickle
 
-        if not is_accelerated_module(pickle):
-            raise RuntimeError("Missing C accelerators for pickle")
-    else:
-        sys.modules["_pickle"] = None
-        import pickle
+    #     if not is_accelerated_module(pickle):
+    #         raise RuntimeError("Missing C accelerators for pickle")
+    # else:
+    #     sys.modules["_pickle"] = None
+    #     import pickle
 
-        if is_accelerated_module(pickle):
-            raise RuntimeError("Unexpected C accelerators for pickle")
+    #     if is_accelerated_module(pickle):
+    #         raise RuntimeError("Unexpected C accelerators for pickle")
 
-    if options.protocol is None:
-        options.protocol = pickle.HIGHEST_PROTOCOL
-    runner.metadata["pickle_protocol"] = str(options.protocol)
-    runner.metadata["pickle_module"] = pickle.__name__
+    # if options.protocol is None:
+    #     options.protocol = pickle.HIGHEST_PROTOCOL
+    # runner.metadata["pickle_protocol"] = str(options.protocol)
+    # runner.metadata["pickle_module"] = pickle.__name__
 
-    runner.bench_time_func(name, benchmark, pickle, options, inner_loops=inner_loops)
+    # runner.bench_time_func(name, benchmark, pickle, options, inner_loops=inner_loops)
+
+    import pickle
+
+    for name, (benchmark, inner_loops) in BENCHMARKS.items():
+        benchmark(1000, pickle, options=None)

@@ -10,7 +10,7 @@ Includes:
 import functools
 import sys
 
-import pyperf
+# import pyperf
 
 # Mako imports (w/o markupsafe)
 sys.modules["markupsafe"] = None
@@ -133,15 +133,17 @@ def bench_mako(runner, table_size, nparagraph, img_count):
         img_count=img_count,
         range=range,
     )
-    runner.bench_func("mako", func)
+    # runner.bench_func("mako", func)
+    func()
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner()
-    runner.metadata["description"] = "Mako templates"
-    runner.metadata["mako_version"] = mako.__version__
+    # runner = pyperf.Runner()
+    # runner.metadata["description"] = "Mako templates"
+    # runner.metadata["mako_version"] = mako.__version__
 
-    table_size = 150
-    nparagraph = 50
-    img_count = 50
-    bench_mako(runner, table_size, nparagraph, img_count)
+    table_size = 150 * 8
+    nparagraph = 50 * 8
+    img_count = 50 * 8
+    # bench_mako(runner, table_size, nparagraph, img_count)
+    bench_mako(None, table_size, nparagraph, img_count)

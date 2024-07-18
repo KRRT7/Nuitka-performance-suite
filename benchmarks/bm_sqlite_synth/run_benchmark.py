@@ -9,7 +9,8 @@ simple.
 import sqlite3
 import math
 
-import pyperf
+# import pyperf
+from time import perf_counter
 
 
 class AvgLength(object):
@@ -28,7 +29,8 @@ class AvgLength(object):
 
 
 def bench_sqlite(loops):
-    t0 = pyperf.perf_counter()
+    # t0 = pyperf.perf_counter()
+    t0 = perf_counter()
 
     conn = sqlite3.connect(":memory:")
     conn.execute("create table cos (x, y, z);")
@@ -47,10 +49,12 @@ def bench_sqlite(loops):
     conn.execute("delete from cos;")
     conn.close()
 
-    return pyperf.perf_counter() - t0
+    # return pyperf.perf_counter() - t0
+    return perf_counter() - t0
 
 
 if __name__ == "__main__":
-    runner = pyperf.Runner()
-    runner.metadata["description"] = "Benchmark Python aggregate for SQLite"
-    runner.bench_time_func("sqlite_synth", bench_sqlite)
+    # runner = pyperf.Runner()
+    # runner.metadata["description"] = "Benchmark Python aggregate for SQLite"
+    # runner.bench_time_func("sqlite_synth", bench_sqlite)
+    bench_sqlite(400000)
