@@ -19,7 +19,7 @@ factory (if available), and a "tg" variant that uses TaskGroups.
 import asyncio
 import math
 import random
-
+import sys
 # import pyperf
 
 
@@ -207,6 +207,9 @@ if __name__ == "__main__":
     loop = asyncio.new_event_loop()
     for benchmark in BENCHMARKS:
         async_tree_class = BENCHMARKS[benchmark]
-        async_tree = async_tree_class(use_task_groups=True)
+        if sys.version_info >= (3, 11):
+            async_tree = async_tree_class(use_task_groups=True)
+        else:
+            async_tree = async_tree_class(use_task_groups=False)
         # asyncio.run(async_tree.run())
         loop.run_until_complete(async_tree.run())

@@ -31,6 +31,22 @@ BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks"
 TEST_BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks_test"
 
 
+EXCLUSIONS: dict[str, dict[tuple[int, int], list[str]]] = {
+    "Linux": {(3, 9): ["bm_django_template"]},
+    "Windows": {(3, 9): ["bm_django_template"]},
+}
+
+
+def check_if_excluded(benchmark: Path) -> bool:
+    name = benchmark.name
+    cases = EXCLUSIONS.get(CURRENT_PLATFORM)
+    if cases:
+        for key, value in cases.items():
+            if PYTHON_VERSION <= key and name in value:
+                return True
+    return False
+
+
 def centered_text(text: str) -> Align:
     return Align.center(Text(text))
 
@@ -69,7 +85,6 @@ class Benchmark:
         platform, version, nuitka_version = file_name.split("-")
         _pyver_split = version.split(".")
         return platform, version, (int(_pyver_split[0]), int(_pyver_split[1]))
-
 
     @property
     def normalized_python_version(self) -> str:
@@ -313,7 +328,8 @@ def setup_benchmark_enviroment(
 
         cmd = "--lto=yes"  # let's not use PGO for now
         if CURRENT_PLATFORM == "Linux":
-            cmd += " --static-libpython=yes --pgo"
+            # cmd += " --static-libpython=yes --pgo-c --pgo-python"
+            cmd += " --static-libpython=yes --pgo-c"
         commands = [
             f"{python_executable} -m nuitka --output-dir=run_benchmark.dist {cmd} run_benchmark.py".split()
         ]

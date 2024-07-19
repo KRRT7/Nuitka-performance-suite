@@ -12,6 +12,7 @@ from benchengine import (
     run_benchmark,
     setup_benchmark_enviroment,
     temporary_directory_change,
+    check_if_excluded,
 )
 
 ITERATIONS = 100
@@ -21,6 +22,11 @@ def main(python_version: str, nuitka_version: str) -> None:
     benchmarks = get_benchmark_setup()
     counter, len_benchmarks = 0, len(benchmarks)
     for benchmark in benchmarks:
+        if check_if_excluded(benchmark):
+            print(f"Skipping benchmark {benchmark.name}, because it is excluded")
+            counter += 1
+            continue
+
         orig_path = benchmark.resolve()
 
         results_dir = orig_path / "results"
@@ -48,6 +54,7 @@ def main(python_version: str, nuitka_version: str) -> None:
                 print(
                     f"Skipping benchmark {benchmark.name}, because {orig_path / 'run_benchmark.py'} does not exist"
                 )
+                counter += 1
                 continue
 
             python_executable = setup_benchmark_enviroment(

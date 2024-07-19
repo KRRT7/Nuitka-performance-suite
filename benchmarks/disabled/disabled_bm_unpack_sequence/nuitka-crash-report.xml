@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='utf8'?>
+<nuitka-compilation-report nuitka_version="2.3.11" nuitka_commercial_version="not installed" completion="exception">
+  <exception exception_type="RecursionError" exception_value="maximum recursion depth exceeded">
+Traceback (most recent call last):
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\MainControl.py", line 1130, in main
+    _main()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\MainControl.py", line 979, in _main
+    main_module = _createMainModule()
+                  ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\MainControl.py", line 249, in _createMainModule
+    optimizeModules(main_module.getOutputFilename())
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\Optimization.py", line 331, in optimizeModules
+    finished = makeOptimizationPass()
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\Optimization.py", line 287, in makeOptimizationPass
+    changed = optimizeModule(current_module)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\Optimization.py", line 161, in optimizeModule
+    changed = optimizeCompiledPythonModule(module)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\Optimization.py", line 77, in optimizeCompiledPythonModule
+    scopes_were_incomplete = module.computeModule()
+                             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\ModuleNodes.py", line 557, in computeModule
+    result = module_body.computeStatementsSequence(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\StatementNodes.py", line 135, in computeStatementsSequence
+    new_statement = statement.computeStatementsSequence(trace_collection)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\FrameNodes.py", line 174, in computeStatementsSequence
+    new_statement = trace_collection.onStatement(statement=statement)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\TraceCollections.py", line 641, in onStatement
+    new_statement, change_tags, change_desc = statement.computeStatement(self)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\VariableAssignNodes.py", line 319, in computeStatement
+    source = trace_collection.onExpression(self.subnode_source)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\TraceCollections.py", line 627, in onExpression
+    new_node, change_tags, change_desc = expression.computeExpressionRaw(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\ChildrenHavingMixins.py", line 4879, in computeExpressionRaw
+    expression = trace_collection.onExpression(sub_expression)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\TraceCollections.py", line 627, in onExpression
+    new_node, change_tags, change_desc = expression.computeExpressionRaw(self)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\FunctionNodes.py", line 1149, in computeExpressionRaw
+    trace_collection.onUsedFunction(self.getFunctionBody())
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\TraceCollections.py", line 332, in onUsedFunction
+    function_body.computeFunctionRaw(self)
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\FunctionNodes.py", line 482, in computeFunctionRaw
+    self.computeFunction(trace_collection)
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\FunctionNodes.py", line 498, in computeFunction
+    result = statements_sequence.computeStatementsSequence(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\StatementNodes.py", line 137, in computeStatementsSequence
+    new_statement = trace_collection.onStatement(statement=statement)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\TraceCollections.py", line 641, in onStatement
+    new_statement, change_tags, change_desc = statement.computeStatement(self)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\TryNodes.py", line 65, in computeStatement
+    result = tried.computeStatementsSequence(trace_collection=trace_collection)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\StatementNodes.py", line 135, in computeStatementsSequence
+    new_statement = statement.computeStatementsSequence(trace_collection)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\FrameNodes.py", line 174, in computeStatementsSequence
+    new_statement = trace_collection.onStatement(statement=statement)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\TraceCollections.py", line 641, in onStatement
+    new_statement, change_tags, change_desc = statement.computeStatement(self)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\TryNodes.py", line 65, in computeStatement
+    result = tried.computeStatementsSequence(trace_collection=trace_collection)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\StatementNodes.py", line 137, in computeStatementsSequence
+    new_statement = trace_collection.onStatement(statement=statement)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\TraceCollections.py", line 641, in onStatement
+    new_statement, change_tags, change_desc = statement.computeStatement(self)
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\LoopNodes.py", line 312, in computeStatement
+    loop_body, break_collections, continue_collections = self._computeLoopBody(
+                                                         ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\nodes\LoopNodes.py", line 267, in _computeLoopBody
+    loop_entry_trace.addLoopContinueTraces(loop_resume_traces)
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 841, in addLoopContinueTraces
+    previous.addMergeUsage()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 469, in addMergeUsage
+    self.previous.addNameUsage()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 110, in addNameUsage
+    self.previous.addNameUsage()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 110, in addNameUsage
+    self.previous.addNameUsage()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 110, in addNameUsage
+    self.previous.addNameUsage()
+  [Previous line repeated 797 more times]
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 655, in addNameUsage
+    previous.addNameUsage()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 110, in addNameUsage
+    self.previous.addNameUsage()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 110, in addNameUsage
+    self.previous.addNameUsage()
+  File "C:\Users\NuitkaDevOps\AppData\Local\hatch\env\virtual\nuitka-performance-suite\v7YHg1Ln\main.py3.11-standard\Lib\site-packages\nuitka\optimizations\ValueTraces.py", line 110, in addNameUsage
+    self.previous.addNameUsage()
+  [Previous line repeated 162 more times]
+RecursionError: maximum recursion depth exceeded
+</exception>
+  <module name="__main__" kind="PythonMainModule" usage="root_module" reason="Root module" source_path="${cwd}\run_benchmark.py">
+    <module_usages>
+      <module_usage name="site" finding="excluded" line="1" exclusion_reason="Not following into stdlib unless standalone or requested to follow into stdlib." />
+      <module_usage name="_virtualenv" finding="absolute" line="1" />
+      <module_usage name="time" finding="absolute" line="4" />
+    </module_usages>
+  </module>
+  <performance>
+    <memory_usage name="after_launch" value="45289472" />
+  </performance>
+  <data_composer blob_size="None" />
+  <command_line>
+    <option value="--output-dir=run_benchmark.dist" />
+    <option value="--lto=yes" />
+    <option value="run_benchmark.py" />
+  </command_line>
+  <plugins>
+    <plugin name="anti-bloat" user_enabled="no" />
+    <plugin name="eventlet" user_enabled="no" />
+    <plugin name="gi" user_enabled="no" />
+    <plugin name="implicit-imports" user_enabled="no" />
+    <plugin name="multiprocessing" user_enabled="no" />
+    <plugin name="options-nanny" user_enabled="no" />
+    <plugin name="pkg-resources" user_enabled="no" />
+    <plugin name="transformers" user_enabled="no" />
+  </plugins>
+  <distributions />
+  <python python_exe="${sys.prefix}\Scripts\python.exe" python_flavor="CPython Official" python_version="3.11.9" os_name="Windows" os_release="11" arch_name="x86_64">
+    <search_path>
+      <path value="${cwd}" />
+      <path value="${sys.real_prefix}\DLLs" />
+      <path value="${sys.real_prefix}\Lib" />
+      <path value="${sys.real_prefix}" />
+      <path value="${sys.prefix}" />
+      <path value="${sys.prefix}\Lib\site-packages" />
+    </search_path>
+  </python>
+  <output run_filename="${cwd}\run_benchmark.dist\run_benchmark.cmd" />
+</nuitka-compilation-report>
