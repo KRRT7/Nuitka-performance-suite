@@ -244,11 +244,12 @@ def run_benchmark(
         "Nuitka": f"{benchmark.name} with Nuitka {nuitka_version} | CPython: {NORMALIZED_PYTHON_VERSION}",
     }
 
-    for _ in track(
-        range(iterations),
-        description=f"[{count}/{number_of_benchmarks}] Warming up {description_dict[type]}",
-        total=iterations,
-    ):
+    # for _ in track(
+    #     range(iterations),
+    #     description=f"[{count}/{number_of_benchmarks}] Warming up {description_dict[type]}",
+    #     total=iterations,
+    # ):
+    for i in range(iterations):
         with Timer() as timer:
             res = run(run_command[type], check=False)  # type: ignore
             if res.returncode != 0:
@@ -256,12 +257,14 @@ def run_benchmark(
                 raise RuntimeError(msg)
 
         local_results["warmup"].append(timer.time_taken)
+    print(f"Completed warming up {benchmark.name} with {type}, min: {min(local_results['warmup'])}")
 
-    for _ in track(
-        range(iterations),
-        description=f"[{count}/{number_of_benchmarks}] Benchmarking {description_dict[type]}",
-        total=iterations,
-    ):
+    # for _ in track(
+    #     range(iterations),
+    #     description=f"[{count}/{number_of_benchmarks}] Benchmarking {description_dict[type]}",
+    #     total=iterations,
+    # ):
+    for i in range(iterations):
         with Timer() as timer:
             res = run(run_command[type], check=False)  # type: ignore
             if res.returncode != 0:
@@ -270,7 +273,7 @@ def run_benchmark(
 
         local_results["benchmark"].append(timer.time_taken)
 
-    print(f"Completed benchmarking {benchmark.name} with {type}")
+    print(f"Completed benchmarking {benchmark.name} with {type}, min: {min(local_results['benchmark'])}")
 
     return local_results
 
