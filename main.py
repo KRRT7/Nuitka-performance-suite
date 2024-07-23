@@ -109,10 +109,12 @@ def main(python_version: str, nuitka_version: str) -> None:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        raise ValueError("Usage: python main.py <python_version> <nuitka_version>")
+    # if len(sys.argv) != 3:
+    #     raise ValueError("Usage: python main.py <python_version> <nuitka_version>")
 
-    python_version = sys.argv[1]
-    nuitka_version = sys.argv[2]
+    # python_version = sys.argv[1]
+    python_version = str(sys.version_info[:2])
+    # nuitka_version = sys.argv[2]
+    nuitka_version = "standard"
 
     main(python_version, nuitka_version)
