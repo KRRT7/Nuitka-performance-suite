@@ -10,7 +10,11 @@ from pathlib import Path
 from statistics import mean
 from subprocess import run
 from time import perf_counter
-from typing import Any, Callable, Generator, Iterator, Literal
+if sys.version_info[:2] >= (3, 8):
+    from typing import Any, Callable, Generator, Iterator, Literal
+else:
+    from typing import Any, Callable, Generator, Iterator
+    from typing_extensions import Literal
 
 from rich import print
 from rich.align import Align
@@ -33,7 +37,7 @@ TEST_BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks_test"
 
 EXCLUSIONS: dict[str, dict[tuple[int, int], list[str]]] = {
     "Linux": {(3, 9): ["bm_django_template"]},
-    "Windows": {(3, 9): ["bm_django_template"]},
+    "Windows": {(3, 9): ["bm_django_template"], (3, 7): ["bm_django_template"]},
 }
 
 
@@ -236,7 +240,7 @@ def run_benchmark(
         "Nuitka": [
             comp_types[compilation_type][CURRENT_PLATFORM],
         ],
-        "CPython": [python_executable, "run_benchmark.py"],
+        "CPython": [str(python_executable), "run_benchmark.py"],
     }
 
     description_dict = {
@@ -257,7 +261,9 @@ def run_benchmark(
                 raise RuntimeError(msg)
 
         local_results["warmup"].append(timer.time_taken)
-    print(f"Completed warming up {benchmark.name} with {type}, min: {min(local_results['warmup'])}")
+    print(
+        f"Completed warming up {benchmark.name} with {type}, min: {min(local_results['warmup'])}"
+    )
 
     # for _ in track(
     #     range(iterations),
@@ -273,7 +279,9 @@ def run_benchmark(
 
         local_results["benchmark"].append(timer.time_taken)
 
-    print(f"Completed benchmarking {benchmark.name} with {type}, min: {min(local_results['benchmark'])}")
+    print(
+        f"Completed benchmarking {benchmark.name} with {type}, min: {min(local_results['benchmark'])}"
+    )
 
     return local_results
 
@@ -334,7 +342,7 @@ def setup_benchmark_enviroment(
             # cmd += " --static-libpython=yes --pgo-c --pgo-python"
             cmd += " --static-libpython=yes --pgo-c"
         commands = [
-            f"{python_executable} -m nuitka --output-dir=run_benchmark.dist {cmd} run_benchmark.py".split()
+            f"{python_executable} -m nuitka --disable-ccache --mingw64 --output-dir=run_benchmark.dist {cmd} run_benchmark.py".split()
         ]
         if requirements_path.exists():
             commands.insert(

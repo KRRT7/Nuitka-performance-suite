@@ -14,15 +14,16 @@ if __name__ == "__main__":
 
     # runner.metadata['description'] = "Performance of the Python 2to3 program"
     # args = runner.parse_args()
-    datadir = os.path.join(os.path.dirname(__file__), 'data', '2to3')
-    pyfiles = glob.glob(os.path.join(datadir, '*.py.txt'))
-    command = [sys.executable, "-m", "lib2to3", "-f", "all"] + pyfiles
 
     try:
         import lib2to3
     except ModuleNotFoundError:
         vendor = os.path.join(os.path.dirname(__file__), 'vendor')
         subprocess.run([sys.executable, "-m", "pip", "install", vendor], check=True)
+    
+    datadir = os.path.join(os.path.dirname(__file__), 'data', '2to3')
+    pyfiles = glob.glob(os.path.join(datadir, '*.py.txt'))
+    command = [sys.executable, "-m", "lib2to3", "-f", "all"] + pyfiles
 
     # runner.bench_command('2to3', command)
     for i in range(3):
