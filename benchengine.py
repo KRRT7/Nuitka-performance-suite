@@ -279,8 +279,11 @@ def run_benchmark(
 
         local_results["benchmark"].append(timer.time_taken)
 
+    # print(
+    #     f"Completed benchmarking {benchmark.name} with {type}, min: {min(local_results['benchmark'])}"
+    # )
     print(
-        f"Completed benchmarking {benchmark.name} with {type}, min: {min(local_results['benchmark'])}"
+        f"[{count}/{number_of_benchmarks}] Completed benchmarking {description_dict[type]} with min: {min(local_results['benchmark'])}"
     )
 
     return local_results
