@@ -296,7 +296,7 @@ def is_in_venv() -> bool:
 
 def _get_benchmarks(test: bool = False) -> Iterator[Path]:
     bench_dir = TEST_BENCHMARK_DIRECTORY if test else BENCHMARK_DIRECTORY
-    for benchmark_case in bench_dir.iterdir():
+    for benchmark_case in sorted(bench_dir.iterdir()):
         if not benchmark_case.is_dir() or not benchmark_case.name.startswith("bm_"):
             continue
         yield benchmark_case
@@ -329,7 +329,7 @@ def get_visualizer_setup(
 
 
 def get_benchmark_setup() -> list[Path]:
-    return list(_get_benchmarks())
+    return sorted(list(_get_benchmarks()))
 
 
 def setup_benchmark_enviroment(
