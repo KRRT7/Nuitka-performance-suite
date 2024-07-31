@@ -24,7 +24,7 @@ if platform.system() == "Windows":
 
     for python_version, nuitka_version in product(
         versions,
-        ["nuitka", '"https://github.com/Nuitka/Nuitka/archive/factory.zip"'],
+        ["nuitka==2.4.4", '"https://github.com/Nuitka/Nuitka/archive/factory.zip"'],
     ):
         nuitka_name = (
             "Nuitka-stable" if "github" not in nuitka_version else "Nuitka-factory"

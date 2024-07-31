@@ -11,7 +11,8 @@ for folder in curr_dir.iterdir():
                 file.is_dir()
                 and any(file.name.startswith(x) for x in ["results", "run_"])
                 or any(
-                    file.name.__contains__(x) for x in [".mypy_cache", "__pycache__", "_venv", ".dist"]
+                    file.name.__contains__(x)
+                    for x in [".mypy_cache", "__pycache__", "_venv", ".dist"]
                 )
             ):
                 print(f"Deleting {file}")

@@ -363,7 +363,8 @@ def setup_benchmark_enviroment(
             f"{python_executable} -m pip install {nuitka_version}",
             f"{python_executable} -m pip install ordered-set",
             f"{python_executable} -m pip install appdirs",
-            f"{python_executable} -m nuitka --standalone --remove-output run_benchmark.py",
+            # f"{python_executable} -m nuitka --standalone --remove-output run_benchmark.py",
+            f"{python_executable} -m nuitka --remove-output --lto=yes run_benchmark.py",
         ]
         if requirements_exists:
             commands.insert(

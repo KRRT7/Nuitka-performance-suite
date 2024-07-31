@@ -1,6 +1,7 @@
 # import pyperf
 import gc
 from time import perf_counter
+
 N_LEVELS = 4500
 
 

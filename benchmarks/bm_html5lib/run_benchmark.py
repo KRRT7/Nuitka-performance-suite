@@ -3,7 +3,6 @@
 The input data is the spec document for HTML 5, written in HTML 5.
 The spec was pulled from http://svn.whatwg.org/webapps/index.
 """
-
 import io
 import os.path
 
@@ -21,19 +20,16 @@ def bench_html5lib(html_file):
 
 if __name__ == "__main__":
     # runner = pyperf.Runner()
-    # runner.metadata["description"] = "Test the performance of the html5lib parser."
-    # runner.metadata["html5lib_version"] = html5lib.__version__
+    # runner.metadata['description'] = (
+    #     "Test the performance of the html5lib parser.")
+    # runner.metadata['html5lib_version'] = html5lib.__version__
 
-    # # Get all our IO over with early.
-    if "__compiled__" in globals():
-        filename = os.path.join(
-            os.path.dirname(__file__), "..", "data", "w3_tr_html5.html"
-        )
-    else:
-        filename = os.path.join(os.path.dirname(__file__), "data", "w3_tr_html5.html")
-
+    # Get all our IO over with early.
+    filename = os.path.join(os.path.dirname(__file__),
+                            "data", "w3_tr_html5.html")
     with open(filename, "rb") as fp:
         html_file = io.BytesIO(fp.read())
 
-    # runner.bench_func("html5lib", bench_html5lib, html_file)
-    bench_html5lib(html_file)
+    # runner.bench_func('html5lib', bench_html5lib, html_file)
+    for i in range(10):
+        bench_html5lib(html_file)

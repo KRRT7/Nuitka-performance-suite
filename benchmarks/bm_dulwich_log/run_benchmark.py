@@ -3,12 +3,8 @@ Iterate on commits of the asyncio Git repository using the Dulwich module.
 """
 
 import os
-from pathlib import Path
-
-# from pathlib import Path
 
 # import pyperf
-
 
 import dulwich.repo
 
@@ -21,15 +17,14 @@ def iter_all_commits(repo):
 
 if __name__ == "__main__":
     # runner = pyperf.Runner()
-    # runner.metadata["description"] = "Dulwich benchmark: " "iterate on all Git commits"
+    # runner.metadata['description'] = ("Dulwich benchmark: "
+    #                                   "iterate on all Git commits")
 
-    if "__compiled__" in globals():
-        repo_path = os.path.join(os.path.dirname(__file__), "..", "data", "asyncio.git")
-    else:
-        repo_path = os.path.join(os.path.dirname(__file__), "data", "asyncio.git")
+    repo_path = os.path.join(os.path.dirname(__file__), 'data', 'asyncio.git')
 
     repo = dulwich.repo.Repo(repo_path)
     head = repo.head()
-    # runner.bench_func("dulwich_log", iter_all_commits, repo)
-    iter_all_commits(repo)
+    # runner.bench_func('dulwich_log', iter_all_commits, repo)
+    for i in range(12):
+        iter_all_commits(repo)
     repo.close()
