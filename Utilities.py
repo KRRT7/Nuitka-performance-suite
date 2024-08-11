@@ -6,7 +6,7 @@ import os
 from typing import Any, Iterator, Callable, Literal, Generator, Iterable
 from pathlib import Path
 import sys
-from subprocess import run, Popen, PIPE
+from subprocess import run, Popen, PIPE, call
 from statistics import mean
 from json import load, dump
 from dataclasses import dataclass
@@ -15,6 +15,7 @@ from rich.align import Align
 from rich.text import Text
 from rich.progress import track
 import platform
+
 
 # NUITKA_VERSIONS = ["nuitka", '"https://github.com/Nuitka/Nuitka/archive/factory.zip"'] # Currently factory is equivalent to release
 NUITKA_VERSIONS = ["nuitka"]
@@ -199,30 +200,14 @@ def temporary_directory_change(path: Path) -> Iterator[None]:
     os.chdir(current_directory)
 
 
-def resolve_venv_path() -> Path:
-    resolved_path = Path(sys.executable).resolve()
-    if is_in_venv():
-        return resolved_path
-    else:
-        venv_create = run(f"{resolved_path} -m venv venv", stdout=PIPE, stderr=PIPE)
-        if venv_create.returncode != 0:
-            raise RuntimeError("Failed to create venv")
-
-        new_venv_path = Path("venv")
-        if new_venv_path.exists():
-            return (new_venv_path / "Scripts" / "python.exe").resolve()
-        else:
-            raise FileNotFoundError("Failed to create venv")
-
-
-def create_venv_with_version(version: str) -> Path:
-    venv_create = run(f"py -{version} -m venv {version}_venv")
-    if venv_create.returncode != 0:
+def create_venv_with_python_path(path: str, version: str) -> Path:
+    venv_create_ret, result = stream_subprocess_output(f"{path} -m venv {version}_venv")
+    if venv_create_ret != 0:
         raise RuntimeError("Failed to create venv")
 
-    new_venv_path = Path(f"{version}_venv")
+    new_venv_path = Path(os.getcwd()) / f"{version}_venv"
     if new_venv_path.exists():
-        return (new_venv_path / "Scripts" / "python.exe").resolve()
+        return new_venv_path / "bin" / "python"
     else:
         raise FileNotFoundError("Failed to create venv")
 
@@ -240,24 +225,24 @@ def run_benchmark(
         "benchmark": [],
     }
     run_command = {
-        "Nuitka": Path(os.getcwd()) / "run_benchmark.dist/run_benchmark.exe",
-        "CPython": [python_executable, "run_benchmark.py"],
+        "Nuitka": str(Path(os.getcwd()) / "run_benchmark.bin"),
+        # "CPython": [str(python_executable), "run_benchmark.py"],
+        "CPython": f"{str(python_executable)} run_benchmark.py"
     }
     description_dict = {
         "Nuitka": f"{benchmark.name} with {type} | Nuitka Version: {nuitka_name} ({cpython_version})",
         "CPython": f"{benchmark.name} with {type} | Python Version: {cpython_version}",
     }
-
     for _ in track(
         range(iterations),
         description=f"warming up {description_dict[type]}",
         total=iterations,
     ):
         with Timer() as timer:
-            res = run(run_command[type])  # type: ignore
-            if res.returncode != 0:
+            resint, result = stream_subprocess_output(run_command[type])
+            if resint != 0:
                 raise RuntimeError(
-                    f"Failed to run benchmark {benchmark.name} due to {res.stderr}"
+                    f"Failed to run benchmark {benchmark.name} due to {''.join(result)}"
                 )
 
         local_results["warmup"].append(timer.time_taken)
@@ -268,10 +253,11 @@ def run_benchmark(
         total=iterations,
     ):
         with Timer() as timer:
-            res = run(run_command[type])  # type: ignore
-            if res.returncode != 0:
-                raise RuntimeError(f"Failed to run benchmark {benchmark.name}")
-
+            resint, result = stream_subprocess_output(run_command[type])
+            if resint != 0:
+                raise RuntimeError(
+                    f"Failed to run benchmark {benchmark.name} due to {''.join(result)}"
+                )
         local_results["benchmark"].append(timer.time_taken)
 
     print(f"Completed benchmarking {benchmark.name} with {type}")
@@ -297,6 +283,33 @@ def parse_py_launcher() -> list[str]:
         return versions
     else:
         raise NotImplementedError("Only Windows is supported")
+
+
+def stream_subprocess_output(command, shell=True):
+    process = Popen(command, stdout=PIPE, stderr=PIPE, text=True, shell=shell)
+
+    content = []
+    while True:
+        output = process.stdout.readline()
+        if output == "" and process.poll() is not None:
+            break
+        if output:
+            content.append(output.strip())
+
+    rc = process.poll()
+    return rc, content
+
+
+def linux_pyenv_paths() -> list[tuple[str, str]]:
+
+    string = "/home/krrt/.pyenv/shims/python{}"
+    versions = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+
+    results: list[tuple[str, str]] = []
+    for version in versions:
+        results.append((string.format(version), version))
+
+    return results
 
 
 def is_in_venv() -> bool:
@@ -343,7 +356,9 @@ def get_visualizer_setup(
                         print(f"Factory file {factory} does not exist vs {result_file}")
                 except FileNotFoundError:
                     continue
-            yield benchmark.name, date, sorted(date_benchmarks, key=lambda x: x.python_version[1])
+            yield benchmark.name, date, sorted(
+                date_benchmarks, key=lambda x: x.python_version[1]
+            )
 
 
 def get_benchmark_setup() -> list[Path]:
@@ -371,11 +386,9 @@ def setup_benchmark_enviroment(
                 2, f"{python_executable} -m pip install -r requirements.txt"
             )
         for command in commands:
-            if silent:
-                res = run(command, stdout=PIPE, stderr=PIPE)
-            else:
-                res = run(command)
-            if res.returncode != 0:
+            resint, result = stream_subprocess_output(command)
+
+            if resint != 0:
                 print(f"Failed to run command {command}")
                 break
     except Exception as e:
