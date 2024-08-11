@@ -294,7 +294,8 @@ def stream_subprocess_output(command, shell=True):
         if output == "" and process.poll() is not None:
             break
         if output:
-            content.append(output.strip())
+            text = output.strip()
+            content.append(text)
 
     rc = process.poll()
     return rc, content
@@ -302,7 +303,7 @@ def stream_subprocess_output(command, shell=True):
 
 def linux_pyenv_paths() -> list[tuple[str, str]]:
 
-    string = "/home/krrt/.pyenv/shims/python{}"
+    string = "/usr/bin/python{}"
     versions = ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
     results: list[tuple[str, str]] = []
