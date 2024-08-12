@@ -5,6 +5,7 @@ from Utilities import (
     create_venv_with_version,
     get_benchmark_setup,
     setup_benchmark_enviroment,
+    check_if_excluded,
     Benchmark,
     Stats,
 )
@@ -25,21 +26,29 @@ if platform.system() == "Windows":
     for python_version, nuitka_version in product(
         versions,
         ["nuitka==2.4.4", '"https://github.com/Nuitka/Nuitka/archive/factory.zip"'],
+        # ["nuitka==2.4.4"],
     ):
         nuitka_name = (
             "Nuitka-stable" if "github" not in nuitka_version else "Nuitka-factory"
         )
         benchmarks = get_benchmark_setup()
+        total, count = len(benchmarks), 0
         for benchmark in benchmarks:
+            if check_if_excluded(benchmark, python_version):
+                print(f"Skipping benchmark {benchmark.name}, because it is excluded")
+                count += 1
+                continue
             orig_path = benchmark.resolve()
 
-            results_dir = orig_path / "results" / datetime.now().strftime("%Y-%m-%d")
+            # results_dir = orig_path / "results" / datetime.now().strftime("%Y-%m-%d")
+            results_dir = orig_path / "results" / "2024-07-31"
             results_file = results_dir / f"{nuitka_name}-{python_version}.json"
 
             if results_file.exists() and results_file.stat().st_size > 0:
                 print(
                     f"Skipping benchmark {benchmark.name}, because results exist for {benchmark.name} with {python_version} and {nuitka_name}"
                 )
+                count += 1
                 continue
 
             if not results_dir.exists():
@@ -113,3 +122,7 @@ if platform.system() == "Windows":
                     shutil.rmtree(venv_path)
                     if dist_path.exists():
                         shutil.rmtree(dist_path)
+                    count += 1
+                    print(
+                        f"Finished benchmark {benchmark.name} with {python_version}, {nuitka_name} {count}/{total}"
+                    )

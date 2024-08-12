@@ -22,6 +22,24 @@ NUITKA_VERSIONS = ["nuitka"]
 BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks"
 TEST_BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks_test"
 
+EXCLUSIONS: dict[str, dict[tuple[int, int], list[str]]] = {
+    "Linux": {(3, 9): ["bm_django_template"]},
+    "Windows": {(3, 9): ["bm_django_template"]},
+}
+
+CURRENT_PLATFORM = platform.system()
+
+
+def check_if_excluded(benchmark: Path, python_version: str) -> bool:
+    tuple_version = tuple(map(int, python_version.split(".")))
+    name = benchmark.name
+    cases = EXCLUSIONS.get(CURRENT_PLATFORM)
+    if cases:
+        for key, value in cases.items():
+            if tuple_version <= key and name in value:
+                return True
+    return False
+
 
 def centered_text(text: str) -> Align:
     return Align.center(Text(text))
@@ -240,7 +258,8 @@ def run_benchmark(
         "benchmark": [],
     }
     run_command = {
-        "Nuitka": Path(os.getcwd()) / "run_benchmark.dist/run_benchmark.exe",
+        # "Nuitka": Path(os.getcwd()) / "run_benchmark.dist/run_benchmark.exe",
+        "Nuitka": Path(os.getcwd()) / "run_benchmark.cmd",
         "CPython": [python_executable, "run_benchmark.py"],
     }
     description_dict = {
@@ -343,7 +362,9 @@ def get_visualizer_setup(
                         print(f"Factory file {factory} does not exist vs {result_file}")
                 except FileNotFoundError:
                     continue
-            yield benchmark.name, date, sorted(date_benchmarks, key=lambda x: x.python_version[1])
+            yield benchmark.name, date, sorted(
+                date_benchmarks, key=lambda x: x.python_version[1]
+            )
 
 
 def get_benchmark_setup() -> list[Path]:

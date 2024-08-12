@@ -165,7 +165,7 @@ cython_debug/
 # nuitka executable
 *dist/
 *run_benchmark.exe
-
+*run_benchmark.cmd
 # Perf suite results
 benchmarks_*/
 # internal sampler
