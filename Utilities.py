@@ -202,6 +202,7 @@ def temporary_directory_change(path: Path) -> Iterator[None]:
 
 def create_venv_with_python_path(path: str, version: str) -> Path:
     venv_create_ret, result = stream_subprocess_output(f"{path} -m venv {version}_venv")
+    print(venv_create_ret)
     if venv_create_ret != 0:
         raise RuntimeError("Failed to create venv")
 
@@ -287,7 +288,6 @@ def parse_py_launcher() -> list[str]:
 
 def stream_subprocess_output(command, shell=True):
     process = Popen(command, stdout=PIPE, stderr=PIPE, text=True, shell=shell)
-
     content = []
     while True:
         output = process.stdout.readline()
@@ -295,6 +295,7 @@ def stream_subprocess_output(command, shell=True):
             break
         if output:
             text = output.strip()
+            print(text)
             content.append(text)
 
     rc = process.poll()

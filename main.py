@@ -31,19 +31,22 @@ for (python_path, python_version), nuitka_version in product(
         "Nuitka-stable" if "github" not in nuitka_version else "Nuitka-factory"
     )
     benchmarks = get_benchmark_setup()
+    count, total = 0, len(benchmarks)
     for benchmark in benchmarks:
         orig_path = benchmark.resolve()
 
-        results_dir = orig_path / "results" / datetime.now().strftime("%Y-%m-%d")
+        # results_dir = orig_path / "results" / datetime.now().strftime("%Y-%m-%d")
+        results_dir = orig_path / "results" / "2024-08-13"
         results_file = (
             results_dir
-            / f"{nuitka_name}-{python_version.replace('/home/krrt/.pyenv/shims/python', '')}.json"
+            / f"{nuitka_name}-{python_version.replace('/usr/bin/python', '')}.json"
         )
 
         if results_file.exists() and results_file.stat().st_size > 0:
             print(
                 f"Skipping benchmark {benchmark.name}, because results exist for {benchmark.name} with {python_version} and {nuitka_name}"
             )
+            count += 1
             continue
 
         if not results_dir.exists():
@@ -63,6 +66,7 @@ for (python_path, python_version), nuitka_version in product(
                 print(
                     f"Skipping benchmark {benchmark.name}, because {orig_path / 'run_benchmark.py'} does not exist"
                 )
+                count += 1
                 continue
             python_executable = create_venv_with_python_path(
                 python_path, python_version
@@ -105,12 +109,15 @@ for (python_path, python_version), nuitka_version in product(
                 )
                 raise SystemExit from None
             except Exception as e:
-                print(
-                    f"Failed to run benchmark {benchmark.name} with {python_version}\n{e}"
-                )
-                break
+                # print(
+                #     f"Failed to run benchmark {benchmark.name} with {python_version}\n{e}"
+                # )
+                # break
+                raise SystemExit(f"Failed to run benchmark {benchmark.name} with {python_version}\n{e}") from None
             finally:
                 # cleanup the benchmark directory venv and dist
+                count += 1
+                print(f"benchmark {count}/{total}")
                 venv_path = python_executable.parent.parent
                 # dist_path = (orig_path / "run_benchmark.dist").resolve()
                 dist_path = (orig_path / "run_benchmark.bin").resolve()
