@@ -41,7 +41,7 @@
 
 # Python imports
 import re
-from time import perf_counter
+from time import perf_counter_ns
 
 # Third party imports
 # import pyperf
@@ -1877,7 +1877,6 @@ def block11():
 
 def bench_regex_v8(loops):
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
     for loops in range(loops):
         block0()
         block1()
@@ -1892,7 +1891,6 @@ def bench_regex_v8(loops):
         block10()
         block11()
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
@@ -1901,4 +1899,8 @@ if __name__ == "__main__":
     #     "Test the performance of regexps " "using V8's benchmarks"
     # )
     # runner.bench_time_func("regex_v8", bench_regex_v8)
+    start = perf_counter_ns()
     bench_regex_v8(30)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

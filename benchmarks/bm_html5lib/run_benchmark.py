@@ -7,6 +7,7 @@ import io
 import os.path
 
 import html5lib
+from time import perf_counter_ns
 # import pyperf
 
 
@@ -29,7 +30,10 @@ if __name__ == "__main__":
                             "data", "w3_tr_html5.html")
     with open(filename, "rb") as fp:
         html_file = io.BytesIO(fp.read())
-
+    start = perf_counter_ns()
     # runner.bench_func('html5lib', bench_html5lib, html_file)
     for i in range(10):
         bench_html5lib(html_file)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

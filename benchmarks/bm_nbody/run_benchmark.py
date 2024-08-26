@@ -14,7 +14,7 @@ Contributed by Kevin Carson.
 Modified by Tupteq, Fredrik Johansson, and Daniel Nanz.
 """
 
-from time import perf_counter
+from time import perf_counter_ns
 
 __contact__ = "collinwinter@google.com (Collin Winter)"
 # DEFAULT_ITERATIONS = 20000
@@ -129,17 +129,18 @@ def bench_nbody(loops, reference, iterations):
     offset_momentum(BODIES[reference])
 
     range_it = range(loops)
-    t0 = (
-        perf_counter()
-    )  # pyperf.perf_counter() is just an alias for time.perf_counter()
 
     for _ in range_it:
         report_energy()
         advance(0.01, iterations)
         report_energy()
 
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
+
     bench_nbody(50, DEFAULT_REFERENCE, DEFAULT_ITERATIONS)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

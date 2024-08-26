@@ -3,7 +3,7 @@ Benchmark for concurrent model communication.
 """
 
 from multiprocessing.pool import Pool, ThreadPool
-
+from time import perf_counter_ns
 
 def f(x: int) -> int:
     return x
@@ -22,9 +22,13 @@ def bench_thread_pool(c: int, n: int, chunk: int) -> None:
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     count = 100000
     # count = 5
     chunk = 10
     num_core = 2
     bench_mp_pool(num_core, count, chunk)
     bench_thread_pool(num_core, count, chunk)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as _f:
+        _f.write(str(end - start))

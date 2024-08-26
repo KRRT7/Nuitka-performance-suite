@@ -9,7 +9,7 @@ from enum import Enum
 from typing import Iterable, List, Optional
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 class WidgetKind(Enum):
@@ -80,20 +80,22 @@ def make_some_widgets() -> List[Widget]:
     return widgets
 
 
-def bench_comprehensions(loops: int) -> float:
+def bench_comprehensions(loops: int) -> None:
     range_it = range(loops)
     widgets = make_some_widgets()
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
     for _ in range_it:
         tray = WidgetTray(1, widgets)
         assert len(tray.sorted_widgets) == 18
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Benchmark comprehensions"
     # runner.bench_time_func("comprehensions", bench_comprehensions)
+    start = perf_counter_ns()
     bench_comprehensions(1000 * 50)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

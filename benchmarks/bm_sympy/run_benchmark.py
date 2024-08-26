@@ -1,5 +1,5 @@
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 from sympy import expand, symbols, integrate, tan, summation
 from sympy.core.cache import clear_cache
@@ -28,18 +28,14 @@ def bench_str():
 
 def bench_sympy(loops, func):
     # timer = pyperf.perf_counter
-    timer = perf_counter
     dt = 0
 
     for _ in range(loops):
         # Don't benchmark clear_cache(), exclude it of the benchmark
         clear_cache()
 
-        t0 = timer()
         func()
-        dt += timer() - t0
 
-    return dt
 
 
 BENCHMARKS = ("expand", "integrate", "sum", "str")
@@ -54,7 +50,7 @@ if __name__ == "__main__":
     # runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
     # runner.metadata["description"] = "SymPy benchmark"
     # runner.argparser.add_argument("benchmark", nargs="?", choices=BENCHMARKS)
-
+    start = perf_counter_ns()
     import gc
 
     gc.disable()
@@ -70,3 +66,6 @@ if __name__ == "__main__":
         func = globals()["bench_" + bench]
         # runner.bench_time_func(name, bench_sympy, func)
         bench_sympy(1, func)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

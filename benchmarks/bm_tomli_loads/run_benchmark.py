@@ -12,25 +12,27 @@ Author: Kumar Aditya
 from pathlib import Path
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 import tomli
 
 DATA_FILE = Path(__file__).parent / "data" / "tomli-bench-data.toml"
 
 
-def bench_tomli_loads(loops: int) -> float:
+def bench_tomli_loads(loops: int) -> None:
     data = DATA_FILE.read_text("utf-8")
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
     for _ in range_it:
         tomli.loads(data)
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Benchmark tomli.loads()"
     # runner.bench_time_func("tomli_loads", bench_tomli_loads)
+    start = perf_counter_ns()
     bench_tomli_loads(1)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

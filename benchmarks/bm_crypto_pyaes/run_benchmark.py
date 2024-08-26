@@ -8,7 +8,7 @@ Benchmark AES in CTR mode using the pyaes module.
 # import pyperf
 
 import pyaes
-from time import perf_counter
+from time import perf_counter_ns
 
 # 23,000 bytes
 CLEARTEXT = b"This is a test. What could possibly go wrong? " * 500
@@ -20,7 +20,6 @@ KEY = b"\xa1\xf6%\x8c\x87}_\xcd\x89dHE8\xbf\xc9,"
 def bench_pyaes(loops):
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for loops in range_it:
         aes = pyaes.AESModeOfOperationCTR(KEY)
@@ -34,11 +33,9 @@ def bench_pyaes(loops):
         aes = None
 
     # dt = pyperf.perf_counter() - t0
-    dt = perf_counter() - t0
     if plaintext != CLEARTEXT:
         raise Exception("decrypt error!")
 
-    return dt
 
 
 if __name__ == "__main__":
@@ -47,5 +44,8 @@ if __name__ == "__main__":
     #     "Pure-Python Implementation " "of the AES block-cipher"
     # )
     # runner.bench_time_func("crypto_pyaes", bench_pyaes)
-
+    start = perf_counter_ns()
     bench_pyaes(10)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

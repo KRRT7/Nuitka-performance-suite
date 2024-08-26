@@ -6,7 +6,7 @@ import math
 import random
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 SIZE = 9
@@ -469,4 +469,8 @@ if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Test the performance of the Go benchmark"
     # runner.bench_func("go", versus_cpu)
+    start = perf_counter_ns()
     versus_cpu()
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

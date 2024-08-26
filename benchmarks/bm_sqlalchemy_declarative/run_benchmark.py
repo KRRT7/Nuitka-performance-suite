@@ -5,6 +5,7 @@ from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine
+from time import perf_counter_ns
 
 
 Base = declarative_base()
@@ -103,5 +104,8 @@ if __name__ == "__main__":
 
     # args = runner.parse_args()
     # runner.bench_time_func("sqlalchemy_declarative", bench_sqlalchemy, args.rows)
-
+    start = perf_counter_ns()
     bench_sqlalchemy(2, 200)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

@@ -11,7 +11,7 @@ Source: https://github.com/slowfrog/hexiom : hexiom2.py, level36.txt
 import io
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 # 2016-07-07: CPython 3.6 takes ~25 ms to solve the board level 25
 DEFAULT_LEVEL = 25
@@ -650,7 +650,6 @@ def main(loops, level):
 
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         stream = io.StringIO()
@@ -659,7 +658,6 @@ def main(loops, level):
         stream = None
 
     # dt = pyperf.perf_counter() - t0
-    dt = perf_counter() - t0
 
     output = "\n".join(line.rstrip() for line in output.splitlines())
     if output != expected:
@@ -667,7 +665,6 @@ def main(loops, level):
             "got a wrong answer:\n%s\nexpected: %s" % (output, expected)
         )
 
-    return dt
 
 
 def add_cmdline_args(cmd, args):
@@ -690,5 +687,8 @@ if __name__ == "__main__":
     # runner.metadata["hexiom_level"] = args.level
 
     # runner.bench_time_func("hexiom", main, args.level)
-
+    start = perf_counter_ns()
     main(4, 30)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

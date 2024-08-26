@@ -14,7 +14,7 @@ because they're "old".
 import re
 
 # Local imports
-from time import perf_counter
+from time import perf_counter_ns
 
 USE_BYTES = False
 
@@ -134,7 +134,6 @@ def bench_regex_effbot(loops):
 
     range_it = range(loops)
     search = re.search
-    t0 = perf_counter()
 
     for _ in range_it:
         # Runs all of the benchmarks for a given value of n.
@@ -151,7 +150,6 @@ def bench_regex_effbot(loops):
             search(regex, string)
             search(regex, string)
 
-    return perf_counter() - t0
 
 
 # cached data, generated at the first call
@@ -165,4 +163,8 @@ def add_cmdline_args(cmd, args):
 
 if __name__ == "__main__":
     # bench_regex_effbot(100)
+    start = perf_counter_ns()
     bench_regex_effbot(30)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

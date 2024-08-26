@@ -1,6 +1,6 @@
 # import pyperf
 import gc
-from time import perf_counter
+from time import perf_counter_ns  
 
 CYCLES = 10000
 LINKS = 200
@@ -43,7 +43,6 @@ def create_gc_cycles(n_cycles, n_links):
 
 
 def benchamark_collection(loops, cycles, links):
-    total_time = 0
     for _ in range(loops):
         gc.collect()
         all_cycles = create_gc_cycles(cycles, links)
@@ -51,18 +50,19 @@ def benchamark_collection(loops, cycles, links):
         # Main loop to measure
         del all_cycles
         # t0 = pyperf.perf_counter()
-        t0 = perf_counter()
         collected = gc.collect()
         # total_time += pyperf.perf_counter() - t0
-        total_time += perf_counter() - t0
 
         assert collected is None or collected >= cycles * (links + 1)
 
-    return total_time
 
 
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "GC link benchmark"
     # runner.bench_time_func("create_gc_cycles", benchamark_collection, CYCLES, LINKS)
+    start = perf_counter_ns()
     create_gc_cycles(CYCLES, LINKS)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

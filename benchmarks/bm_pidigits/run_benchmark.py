@@ -9,7 +9,7 @@ http://benchmarksgame.alioth.debian.org/
 """
 
 import itertools
-
+from time import perf_counter_ns
 # import pyperf
 
 
@@ -68,4 +68,8 @@ if __name__ == "__main__":
     # runner.metadata["description"] = "Compute digits of pi."
     # runner.metadata["pidigits_ndigit"] = args.digits
     # runner.bench_func("pidigits", calc_ndigits, args.digits)
+    start = perf_counter_ns()
     calc_ndigits(DEFAULT_DIGITS * 2)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

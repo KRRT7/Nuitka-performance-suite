@@ -15,6 +15,7 @@ Calculate `factorial` using the decimal module.
 
 
 import decimal
+from time import perf_counter_ns
 
 
 # import pyperf
@@ -48,4 +49,8 @@ if __name__ == "__main__":
 
     # args = runner.parse_args()
     # runner.bench_func("decimal_factorial", bench_decimal_factorial)
+    start = perf_counter_ns()
     bench_decimal_factorial()
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

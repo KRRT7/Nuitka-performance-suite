@@ -21,7 +21,7 @@ import os
 from struct import unpack
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 def rel_path(*path):
@@ -43,7 +43,6 @@ def bench_telco(loops, filename):
     outfil = io.StringIO()
 
     # start = pyperf.perf_counter()
-    start = perf_counter()
     for _ in range(loops):
         infil.seek(0)
 
@@ -81,7 +80,6 @@ def bench_telco(loops, filename):
         outfil.truncate()
 
     # return pyperf.perf_counter() - start
-    return perf_counter() - start
 
 
 if __name__ == "__main__":
@@ -90,7 +88,10 @@ if __name__ == "__main__":
 
     # filename = rel_path("data", "telco-bench.b")
     # runner.bench_time_func("telco", bench_telco, filename)
-
+    start = perf_counter_ns()
     loops = 150
     filename = rel_path("data", "telco-bench.b")
     bench_telco(loops, filename)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

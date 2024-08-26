@@ -19,7 +19,7 @@ but ideally the problem would be found...
 import hashlib
 import os
 import struct
-from time import perf_counter
+from time import perf_counter_ns
 
 # import pyperf
 
@@ -701,7 +701,6 @@ def bench_pyflake(loops, filename):
     input_fp = open(filename, "rb")
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         input_fp.seek(0)
@@ -716,13 +715,11 @@ def bench_pyflake(loops, filename):
             raise Exception("Unknown file magic %x, not a gzip/bzip2 file" % hex(magic))
 
     # dt = pyperf.perf_counter() - t0
-    dt = perf_counter() - t0
     input_fp.close()
 
     if hashlib.md5(out).hexdigest() != "afa004a630fe072901b1d9628b960974":
         raise Exception("MD5 checksum mismatch")
 
-    return dt
 
 
 if __name__ == "__main__":
@@ -731,4 +728,8 @@ if __name__ == "__main__":
 
     # filename = os.path.join(os.path.dirname(__file__), "data", "interpreter.tar.bz2")
     # runner.bench_time_func("pyflate", bench_pyflake, filename)
+    start = perf_counter_ns()
     bench_pyflake(1, "data/interpreter.tar.bz2")
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

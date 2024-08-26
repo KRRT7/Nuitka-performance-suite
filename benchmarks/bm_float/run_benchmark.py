@@ -3,7 +3,7 @@ Artificial, floating point-heavy benchmark originally used by Factor.
 """
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 from math import sin, cos, sqrt
 
@@ -60,4 +60,8 @@ if __name__ == "__main__":
 
     # points = POINTS
     # runner.bench_func("float", benchmark, points)
+    start = perf_counter_ns()
     benchmark(POINTS)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

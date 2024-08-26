@@ -7,6 +7,7 @@ This will have Django generate a 150x150-cell HTML table.
 
 import django.conf
 from django.template import Context, Template
+from time import perf_counter_ns
 
 
 # 2016-10-10: Python 3.6 takes 380 ms
@@ -50,5 +51,8 @@ if __name__ == "__main__":
     # runner.metadata['django_table_size'] = args.table_size
 
     # bench_django_template(runner, args.table_size)
-
+    start = perf_counter_ns()
     bench_django_template(None, DEFAULT_SIZE)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Iterator
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 class Tree:
@@ -35,21 +35,23 @@ def tree(input: range) -> Tree | None:
     return Tree(tree(input[:i]), input[i], tree(input[i + 1 :]))
 
 
-def bench_generators(loops: int) -> float:
+def bench_generators(loops: int) -> None:
     assert list(tree(range(10))) == list(range(10))
     range_it = range(loops)
     iterable = tree(range(100000))
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
     for _ in range_it:
         for _ in iterable:
             pass
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Benchmark generators"
     # runner.bench_time_func("generators", bench_generators)
+    start = perf_counter_ns()
     bench_generators(10)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

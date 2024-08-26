@@ -1,5 +1,6 @@
 import json
 import sys
+from time import perf_counter_ns
 
 # import pyperf
 
@@ -71,4 +72,8 @@ def main():
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     main()
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

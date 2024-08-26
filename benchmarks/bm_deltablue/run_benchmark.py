@@ -19,7 +19,7 @@ the layout & logic from the original. (Ugh.)
 """
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 # The JS variant implements "OrderedCollection", which basically completely
@@ -632,7 +632,10 @@ def delta_blue(n):
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "DeltaBlue benchmark"
-
+    start = perf_counter_ns()
     n = 8500
     # runner.bench_func("deltablue", delta_blue, n)
     delta_blue(n)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

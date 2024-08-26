@@ -3,7 +3,7 @@ Render a template using Genshi module.
 """
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 from genshi.template import MarkupTemplate, NewTextTemplate
 
@@ -32,13 +32,11 @@ def bench_genshi(loops, tmpl_cls, tmpl_str):
     ]
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
     for _ in range_it:
         stream = tmpl.generate(table=table)
         stream.render()
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def add_cmdline_args(cmd, args):
@@ -61,6 +59,7 @@ if __name__ == "__main__":
     # if args.benchmark:
     #     benchmarks = (args.benchmark,)
     # else:
+    start = perf_counter_ns()
     benchmarks = sorted(BENCHMARKS)
 
     for bench in benchmarks:
@@ -68,3 +67,6 @@ if __name__ == "__main__":
         tmpl_cls, tmpl_str = BENCHMARKS[bench]
         # runner.bench_time_func(name, bench_genshi, tmpl_cls, tmpl_str)
         bench_genshi(10, tmpl_cls, tmpl_str)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

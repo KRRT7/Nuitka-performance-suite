@@ -19,7 +19,7 @@ import bisect
 import re
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 DEFAULT_INIT_LEN = 100000
@@ -197,17 +197,14 @@ def run_benchmarks(seq):
 def bench_regex_dna(loops, seq, expected_res):
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for i in range_it:
         res = run_benchmarks(seq)
 
     # dt = pyperf.perf_counter() - t0
-    dt = perf_counter() - t0
     if (expected_res is not None) and (res != expected_res):
         raise Exception("run_benchmarks() error")
 
-    return dt
 
 
 def add_cmdline_args(cmd, args):
@@ -254,6 +251,10 @@ if __name__ == "__main__":
     #     raise Exception("init_benchmarks() error")
 
     # runner.bench_time_func("regex_dna", bench_regex_dna, seq, expected_res)
+    start = perf_counter_ns()
     seq = init_benchmarks(DEFAULT_INIT_LEN, DEFAULT_RNG_SEED)
 
     bench_regex_dna(4, seq, None)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

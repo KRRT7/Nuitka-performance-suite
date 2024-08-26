@@ -2,7 +2,7 @@ from array import array
 import math
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 class Array2D(object):
@@ -157,20 +157,17 @@ def SOR_execute(omega, G, cycles, Array):
 def bench_SOR(loops, n, cycles, Array):
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         G = Array(n, n)
         SOR_execute(1.25, G, cycles, Array)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def SparseCompRow_matmult(M, y, val, row, col, x, num_iterations):
     range_it = range(num_iterations)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         for r in range(M):
@@ -180,7 +177,6 @@ def SparseCompRow_matmult(M, y, val, row, col, x, num_iterations):
             y[r] = sa
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def bench_SparseMatMult(cycles, N, nz):
@@ -220,13 +216,11 @@ def MonteCarlo(Num_samples):
 def bench_MonteCarlo(loops, Num_samples):
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         MonteCarlo(Num_samples)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def LU_factor(A, pivot):
@@ -271,13 +265,11 @@ def bench_LU(cycles, N):
     pivot = array("i", [0]) * N
     range_it = range(cycles)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         LU(lu, A, pivot)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def int_log2(n):
@@ -385,7 +377,6 @@ def bench_FFT(loops, N, cycles):
     init_vec = Random(7).RandomVector(twoN)
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         x = copy_vector(init_vec)
@@ -394,7 +385,6 @@ def bench_FFT(loops, N, cycles):
             FFT_inverse(twoN, x)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def add_cmdline_args(cmd, args):
@@ -427,8 +417,12 @@ if __name__ == "__main__":
     #     benchmarks = (args.benchmark,)
     # else:
     #     benchmarks = sorted(BENCHMARKS)
+    start = perf_counter_ns()
     bench_SOR(25, 50, 5, Array2D)
     bench_SparseMatMult(25, 1000, 50 * 1000)
     bench_MonteCarlo(25, 50 * 1000)
     bench_LU(25, 50)
     bench_FFT(25, 1024 // 4, 5)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

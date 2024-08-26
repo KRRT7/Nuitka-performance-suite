@@ -12,7 +12,7 @@ import array
 import math
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 DEFAULT_WIDTH = 100
@@ -357,7 +357,6 @@ class CheckerboardSurface(SimpleSurface):
 def bench_raytrace(loops, width, height, filename):
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for i in range_it:
         canvas = Canvas(width, height)
@@ -375,11 +374,9 @@ def bench_raytrace(loops, width, height, filename):
         s.render(canvas)
 
     # dt = pyperf.perf_counter() - t0
-    dt = perf_counter() - t0
 
     if filename:
         canvas.write_ppm(filename)
-    return dt
 
 
 def add_cmdline_args(cmd, args):
@@ -416,5 +413,8 @@ if __name__ == "__main__":
     # runner.bench_time_func(
     #     "raytrace", bench_raytrace, args.width, args.height, args.filename
     # )
-
+    start = perf_counter_ns()
     bench_raytrace(1, 100, 100, False)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

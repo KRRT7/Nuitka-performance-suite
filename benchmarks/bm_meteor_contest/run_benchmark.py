@@ -9,7 +9,7 @@ contributed by Daniel Nanz, 2008-08-21
 """
 
 from bisect import bisect
-from time import perf_counter
+from time import perf_counter_ns
 
 SOLVE_ARG = 60
 
@@ -207,7 +207,6 @@ def solve(
 
 def bench_meteor_contest(loops, board, pieces, solve_arg, fps, se_nh):
     range_it = range(loops)
-    t0 = perf_counter()
 
     for _ in range_it:
         free = frozenset(range(len(board)))
@@ -216,12 +215,10 @@ def bench_meteor_contest(loops, board, pieces, solve_arg, fps, se_nh):
         solutions = []
         solve(solve_arg, 0, free, curr_board, pieces_left, solutions, fps, se_nh)
 
-    dt = perf_counter() - t0
 
     if solutions != SOLUTIONS:
         raise ValueError("unexpected solutions")
 
-    return dt
 
 
 def main():
@@ -234,4 +231,8 @@ def main():
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     main()
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

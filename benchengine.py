@@ -54,11 +54,11 @@ def centered_text(text: str) -> Align:
 @dataclass
 class Stats:
     name: str
-    warmup: list[float]
-    benchmark: list[float]
+    warmup: list[int]
+    benchmark: list[int]
 
     @classmethod
-    def from_dict(cls, stats_dict: dict[str, list[float]], name: str) -> Stats:
+    def from_dict(cls, stats_dict: dict[str, list[int]], name: str) -> Stats:
         return cls(
             name,
             stats_dict["warmup"],
@@ -70,13 +70,13 @@ class Stats:
 class Benchmark:
     name: str
     nuitka_version: str | None = None
-    file_json: dict[str, dict[str, list[float]]] | None = None
+    file_json: dict[str, dict[str, list[int]]] | None = None
     nuitka_stats: Stats | None = None
     cpython_stats: Stats | None = None
     factory: Benchmark | None = None
     python_version: tuple[int, int] | None = None
 
-    def parse_stats(self, stats: dict[str, dict[str, list[float]]]) -> None:
+    def parse_stats(self, stats: dict[str, dict[str, list[int]]]) -> None:
         self.nuitka_stats = Stats.from_dict(stats["nuitka"], "nuitka")
         self.cpython_stats = Stats.from_dict(stats["cpython"], "cpython")
 
@@ -167,31 +167,6 @@ class Benchmark:
             difference = (nuitka_stats - cpython_stats) / cpython_stats * 100
             return Align.center(Text(f"{difference:.2f}%", style="yellow"))
 
-
-class Timer:
-    def __init__(self) -> None:
-        self.start: float = 0
-        self.end: float = 0
-
-        self.time_taken: float = 0
-
-    def __enter__(self) -> Timer:
-        self.start = perf_counter()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb) -> None:  # type: ignore
-        self.end = perf_counter()
-
-        self.time_taken = self.end - self.start
-
-    def __call__(self, func: Callable[..., Any]) -> Callable[..., Any]:
-        def wrapper(*args: Any, **kwargs: Any) -> Any:
-            with self:
-                return func(*args, **kwargs)
-
-        return wrapper
-
-
 @contextmanager
 def temporary_directory_change(path: Path) -> Iterator[None]:
     if not path.exists():
@@ -212,8 +187,8 @@ def run_benchmark(
     count: int,
     number_of_benchmarks: int,
     compilation_type: Literal["onefile", "standalone", "accelerated"] = "accelerated",
-) -> dict[str, list[float]]:
-    local_results: dict[str, list[float]] = {
+) -> dict[str, list[int]]:
+    local_results: dict[str, list[int]] = {
         "warmup": [],
         "benchmark": [],
     }
@@ -249,26 +224,30 @@ def run_benchmark(
         description=f"[{count}/{number_of_benchmarks}] Warming up {description_dict[type]}",
         total=iterations,
     ):
-        with Timer() as timer:
-            res = run(run_command[type], check=False)  # type: ignore
-            if res.returncode != 0:
-                msg = f"Failed to run benchmark {benchmark.name} due to {res.stderr!r}"
-                raise RuntimeError(msg)
-
-        local_results["warmup"].append(timer.time_taken)
+        res = run(run_command[type], check=False)  # type: ignore
+        if res.returncode != 0:
+            msg = f"Failed to run benchmark {benchmark.name} due to {res.stderr!r}"
+            raise RuntimeError(msg)
+        
+        with open("bench_time.txt") as f:
+            time_taken = int(f.read())
+        
+        local_results["warmup"].append(time_taken)
 
     for _ in track(
         range(iterations),
         description=f"[{count}/{number_of_benchmarks}] Benchmarking {description_dict[type]}",
         total=iterations,
     ):
-        with Timer() as timer:
-            res = run(run_command[type], check=False)  # type: ignore
-            if res.returncode != 0:
-                msg = f"Failed to run benchmark {benchmark.name}"
-                raise RuntimeError(msg)
+        res = run(run_command[type], check=False)  # type: ignore
+        if res.returncode != 0:
+            msg = f"Failed to run benchmark {benchmark.name}"
+            raise RuntimeError(msg)
+        
+        with open("bench_time.txt") as f:
+            time_taken = int(f.read())
 
-        local_results["benchmark"].append(timer.time_taken)
+        local_results["benchmark"].append(time_taken)
 
     print(f"Completed benchmarking {benchmark.name} with {type}")
 
@@ -309,7 +288,7 @@ def get_visualizer_setup(
                     print(e)
                     continue
                 benchmark_case_group.append(benchmark)
-        benchmark_case_group.sort(key=lambda x: x.python_version, reverse=True)
+        benchmark_case_group.sort(key=lambda x: x.python_version, reverse=True) #type: ignore
 
         yield benchmark.name, benchmark_case_group
 

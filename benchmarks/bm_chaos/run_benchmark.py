@@ -7,7 +7,7 @@ import math
 import random
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 DEFAULT_THICKNESS = 0.25
@@ -387,4 +387,8 @@ def main():
 #     main(runner, args)
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     main()
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

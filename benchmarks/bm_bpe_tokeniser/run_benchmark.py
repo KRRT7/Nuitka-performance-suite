@@ -10,7 +10,7 @@ https://github.com/openai/tiktoken
 from __future__ import annotations
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 import collections
@@ -148,7 +148,7 @@ def train(data: str):
     enc.encode(data)
 
 
-def bench_bpe_tokeniser(loops: int) -> float:
+def bench_bpe_tokeniser(loops: int) -> None:
 
     with open(DATA, "r", encoding="utf-8") as f:
         data = f.read()
@@ -156,15 +156,16 @@ def bench_bpe_tokeniser(loops: int) -> float:
     range_it = range(loops)
 
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
     for _ in range_it:
         train(data)
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
 
     DATA = Path(__file__).parent / "data" / "frankenstein_intro.txt"
-
+    start = perf_counter_ns()
     bench_bpe_tokeniser(1)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

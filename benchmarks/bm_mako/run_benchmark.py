@@ -9,7 +9,7 @@ Includes:
 
 import functools
 import sys
-
+from time import perf_counter_ns
 # import pyperf
 
 # Mako imports (w/o markupsafe)
@@ -141,9 +141,12 @@ if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Mako templates"
     # runner.metadata["mako_version"] = mako.__version__
-
+    start = perf_counter_ns()
     table_size = 150 * 8
     nparagraph = 50 * 8
     img_count = 50 * 8
     # bench_mako(runner, table_size, nparagraph, img_count)
     bench_mako(None, table_size, nparagraph, img_count)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

@@ -20,6 +20,7 @@ import asyncio
 import math
 import random
 import sys
+from time import perf_counter_ns
 # import pyperf
 
 
@@ -204,6 +205,7 @@ if __name__ == "__main__":
     #     async_tree_class = BENCHMARKS[benchmark]
     #     async_tree = async_tree_class(use_task_groups=False)
     #     asyncio.run(async_tree.run())
+    start = perf_counter_ns()
     loop = asyncio.new_event_loop()
     for benchmark in BENCHMARKS:
         async_tree_class = BENCHMARKS[benchmark]
@@ -213,3 +215,7 @@ if __name__ == "__main__":
             async_tree = async_tree_class(use_task_groups=False)
         # asyncio.run(async_tree.run())
         loop.run_until_complete(async_tree.run())
+
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

@@ -2,7 +2,7 @@
 
 from sqlglot import parse_one, transpile
 from sqlglot.optimizer import optimize, normalize
-from time import perf_counter
+from time import perf_counter_ns
 
 SQL = """
 select
@@ -182,6 +182,10 @@ def add_parser_args(parser):
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     for benchmark in BENCHMARKS:
         # BENCHMARKS[benchmark](10)
         BENCHMARKS[benchmark](3)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

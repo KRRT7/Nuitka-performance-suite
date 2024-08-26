@@ -22,7 +22,7 @@ Protocols with callable and non-callable members also
 exercise different code paths in _ProtocolMeta.__instancecheck__,
 so are also tested separately.
 """
-
+from time import perf_counter_ns
 import time
 from typing import Protocol, runtime_checkable
 
@@ -243,5 +243,8 @@ if __name__ == "__main__":
     #     "against runtime-checkable protocols"
     # )
     # runner.bench_time_func("typing_runtime_protocols", bench_protocols)
-
+    start = perf_counter_ns()
     bench_protocols(1600)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

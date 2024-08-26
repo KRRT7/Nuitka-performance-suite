@@ -6,6 +6,7 @@ Contributed by Sokolov Yura, modified by Tupteq.
 """
 
 # import pyperf
+from time import perf_counter_ns
 
 
 DEFAULT_ARG = 9
@@ -52,4 +53,8 @@ if __name__ == "__main__":
     # runner = pyperf.Runner()
     # arg = DEFAULT_ARG
     # runner.bench_func("fannkuch", fannkuch, arg)
+    start = perf_counter_ns()
     fannkuch(DEFAULT_ARG)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

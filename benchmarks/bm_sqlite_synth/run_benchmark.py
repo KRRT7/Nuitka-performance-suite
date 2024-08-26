@@ -10,7 +10,7 @@ import sqlite3
 import math
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 class AvgLength(object):
@@ -30,7 +30,6 @@ class AvgLength(object):
 
 def bench_sqlite(loops):
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     conn = sqlite3.connect(":memory:")
     conn.execute("create table cos (x, y, z);")
@@ -50,11 +49,14 @@ def bench_sqlite(loops):
     conn.close()
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Benchmark Python aggregate for SQLite"
     # runner.bench_time_func("sqlite_synth", bench_sqlite)
+    start = perf_counter_ns()
     bench_sqlite(400000)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

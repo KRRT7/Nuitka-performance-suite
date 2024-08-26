@@ -9,7 +9,7 @@ to real-world scenarios which operate on single objects at a time.
 import json
 import random
 import sys
-
+from time import perf_counter_ns
 # Local imports
 # import pyperf
 
@@ -117,7 +117,7 @@ def bench_json_loads(objs):
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Benchmark json.loads()"
-
+    start = perf_counter_ns()
     json_dict = json.dumps(DICT)
     json_tuple = json.dumps(TUPLE)
     json_dict_group = json.dumps(DICT_GROUP)
@@ -126,3 +126,6 @@ if __name__ == "__main__":
     # runner.bench_func("json_loads", bench_json_loads, objs, inner_loops=20)
     for i in range(2000):
         bench_json_loads(objs)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

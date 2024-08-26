@@ -1,7 +1,7 @@
 """
 Benchmark for recursive fibonacci function.
 """
-
+from time import perf_counter_ns
 
 def fibonacci(n: int) -> int:
     if n <= 1:
@@ -17,4 +17,8 @@ def bench_recursion(loops: int) -> float:
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     bench_recursion(100)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

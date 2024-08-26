@@ -16,7 +16,7 @@ import random
 import sys
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 # IS_PYPY = pyperf.python_implementation() == "pypy"
 
 __author__ = "collinwinter@google.com (Collin Winter)"
@@ -107,7 +107,6 @@ def bench_pickle(loops, pickle, options):
     # protocol = options.protocol
     protocol = 4
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         for obj in objs:
@@ -134,7 +133,6 @@ def bench_pickle(loops, pickle, options):
             dumps(obj, protocol)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def bench_unpickle(loops, pickle, options):
@@ -151,7 +149,6 @@ def bench_unpickle(loops, pickle, options):
     objs = (pickled_dict, pickled_tuple, pickled_dict_group)
 
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
     for _ in range_it:
         for obj in objs:
             # 20 loads dict
@@ -177,7 +174,6 @@ def bench_unpickle(loops, pickle, options):
             loads(obj)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 LIST = [[list(range(10)), list(range(10))] for _ in range(10)]
@@ -191,7 +187,6 @@ def bench_pickle_list(loops, pickle, options):
     # protocol = options.protocol
     protocol = 4
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         # 10 dumps list
@@ -207,7 +202,6 @@ def bench_pickle_list(loops, pickle, options):
         dumps(obj, protocol)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 def bench_unpickle_list(loops, pickle, options):
@@ -218,7 +212,6 @@ def bench_unpickle_list(loops, pickle, options):
     # micro-optimization: use fast local variables
     loads = pickle.loads
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         # 10 loads list
@@ -234,7 +227,6 @@ def bench_unpickle_list(loops, pickle, options):
         loads(pickled_list)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 MICRO_DICT = dict((key, dict.fromkeys(range(10))) for key in range(100))
@@ -247,7 +239,6 @@ def bench_pickle_dict(loops, pickle, options):
     protocol = 4
     obj = MICRO_DICT
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         # 5 dumps dict
@@ -258,7 +249,6 @@ def bench_pickle_dict(loops, pickle, options):
         pickle.dumps(obj, protocol)
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 BENCHMARKS = {
@@ -284,6 +274,7 @@ def add_cmdline_args(cmd, args):
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     # runner = pyperf.Runner(add_cmdline_args=add_cmdline_args)
     # runner.metadata["description"] = "Test the performance of pickling."
 
@@ -327,8 +318,10 @@ if __name__ == "__main__":
     # runner.metadata["pickle_module"] = pickle.__name__
 
     # runner.bench_time_func(name, benchmark, pickle, options, inner_loops=inner_loops)
-
     import pickle
 
     for name, (benchmark, inner_loops) in BENCHMARKS.items():
         benchmark(1000, pickle, options=None)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

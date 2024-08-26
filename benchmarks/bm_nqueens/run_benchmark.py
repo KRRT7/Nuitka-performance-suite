@@ -1,6 +1,7 @@
 """Simple, brute-force N-Queens solver."""
 
 # import pyperf
+from time import perf_counter_ns
 
 __author__ = "collinwinter@google.com (Collin Winter)"
 
@@ -60,7 +61,10 @@ def bench_n_queens(queen_count):
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "Simple, brute-force N-Queens solver"
-
+    start = perf_counter_ns()
     queen_count = 9
     # runner.bench_func("nqueens", bench_n_queens, queen_count)
     bench_n_queens(queen_count)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

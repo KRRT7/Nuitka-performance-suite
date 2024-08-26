@@ -10,6 +10,7 @@ based on a Java version:
 """
 
 # import pyperf
+from time import perf_counter_ns
 
 
 # Task IDs
@@ -423,7 +424,10 @@ class Richards(object):
 if __name__ == "__main__":
     # runner = pyperf.Runner()
     # runner.metadata["description"] = "The Richards benchmark"
-
+    start = perf_counter_ns()
     richard = Richards()
     # runner.bench_func("richards", richard.run, 1)
     richard.run(20)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

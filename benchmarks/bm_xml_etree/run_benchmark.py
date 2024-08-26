@@ -14,7 +14,7 @@ import tempfile
 from collections import defaultdict
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 __author__ = "stefan_ml@behnel.de (Stefan Behnel)"
@@ -181,13 +181,11 @@ def bench_etree(iterations, etree, bench_func):
         etree.ElementTree(xml_root).write(file_path)
 
         # t0 = pyperf.perf_counter()
-        t0 = perf_counter()
 
         for _ in range(iterations):
             bench_func(etree, file_path, xml_data, xml_root)
 
         # dt = pyperf.perf_counter() - t0
-        dt = perf_counter() - t0
     finally:
         try:
             os.close(tf)
@@ -289,6 +287,7 @@ if __name__ == "__main__":
     # if options.benchmark:
     #     benchmarks = (options.benchmark,)
     # else:
+    start = perf_counter_ns()
     benchmarks = BENCHMARKS
 
     # Run the benchmark
@@ -301,3 +300,7 @@ if __name__ == "__main__":
         # runner.bench_time_func(name, bench_etree, etree_module, bench_func)
         iterations = 2
         dt = bench_etree(iterations, et, bench_func)
+
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

@@ -4,7 +4,7 @@ from time import perf_counter
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, MetaData
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
-
+from time import perf_counter_ns
 
 metadata = MetaData()
 
@@ -98,4 +98,8 @@ if __name__ == "__main__":
 
     # args = runner.parse_args()
     # runner.bench_time_func("sqlalchemy_imperative", bench_sqlalchemy, args.rows)
+    start = perf_counter_ns()
     bench_sqlalchemy(6, 600)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

@@ -10,6 +10,7 @@ import asyncio
 # from pyperf import Runner
 import ssl
 import os
+from time import perf_counter_ns
 
 CHUNK_SIZE = 1024 ** 2 * 10
 # Taken from CPython's test suite
@@ -70,5 +71,8 @@ if __name__ == '__main__':
     # args = runner.parse_args()
     # name = 'asyncio_tcp' + ('_ssl' if args.ssl else '')
     # runner.bench_async_func(name, main, args.ssl)
-
+    start = perf_counter_ns()
     asyncio.run(main(False))
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

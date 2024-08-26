@@ -9,7 +9,7 @@ import sys
 import socket
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns  
 
 from tornado.httpclient import AsyncHTTPClient
 from tornado.httpserver import HTTPServer
@@ -69,7 +69,6 @@ def bench_tornado(loops):
         client = AsyncHTTPClient()
         range_it = range(loops)
         # t0 = pyperf.perf_counter()
-        t0 = perf_counter()
 
         for _ in range_it:
             futures = [client.fetch(url) for j in range(CONCURRENCY)]
@@ -80,7 +79,6 @@ def bench_tornado(loops):
                 assert buf.tell() == len(CHUNK) * NCHUNKS
 
         # namespace["dt"] = pyperf.perf_counter() - t0
-        namespace["dt"] = perf_counter() - t0
         client.close()
 
     IOLoop.current().run_sync(run_client)
@@ -96,6 +94,7 @@ if __name__ == "__main__":
     # https://bugs.python.org/issue37373
     # https://github.com/python/pyperformance/issues/61
     # https://github.com/tornadoweb/tornado/pull/2686
+    start = perf_counter_ns()
     if sys.platform == "win32" and sys.version_info[:2] >= (3, 8):
         import asyncio
 
@@ -107,3 +106,6 @@ if __name__ == "__main__":
     # )
     # runner.bench_time_func("tornado_http", bench_tornado)
     bench_tornado(5)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

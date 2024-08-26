@@ -9,7 +9,7 @@ import docutils
 from docutils import core
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 try:
     from docutils.utils.math.math2html import Trace
@@ -21,11 +21,9 @@ else:
 DOC_ROOT = (Path(__file__).parent / "data" / "docs").resolve()
 
 def build_html(doc_root):
-    elapsed = 0
     for file in doc_root.rglob("*.txt"):
         file_contents = file.read_text(encoding="utf-8")
         # t0 = pyperf.perf_counter()
-        t0 = perf_counter()
         with contextlib.suppress(docutils.ApplicationError):
             core.publish_string(
                 source=file_contents,
@@ -39,15 +37,11 @@ def build_html(doc_root):
                 },
             )
         # elapsed += pyperf.perf_counter() - t0
-        elapsed += perf_counter() - t0
-    return elapsed
 
 
 def bench_docutils(loops, doc_root):
-    runs_total = 0
     for _ in range(loops):
-        runs_total += build_html(doc_root)
-    return runs_total
+        build_html(doc_root)
 
 
 if __name__ == "__main__":
@@ -57,5 +51,8 @@ if __name__ == "__main__":
     # args = runner.parse_args()
 
     # runner.bench_time_func("docutils", bench_docutils, DOC_ROOT)
-
+    start = perf_counter_ns()
     bench_docutils(1, DOC_ROOT)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

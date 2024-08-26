@@ -17,3 +17,6 @@ for folder in curr_dir.iterdir():
             ):
                 print(f"Deleting {file}")
                 shutil.rmtree(file)
+            elif file.is_file() and file.name in ["run_benchmark.exe"]:
+                print(f"Deleting {file}")
+                file.unlink()

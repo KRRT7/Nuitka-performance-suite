@@ -12,7 +12,7 @@ import shutil
 import tempfile
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 NUM_FILES = 2000
@@ -48,7 +48,6 @@ def bench_pathlib(loops, tmp_path):
 
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         # Do something simple with each path.
@@ -62,7 +61,6 @@ def bench_pathlib(loops, tmp_path):
             p.stat()
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
@@ -71,10 +69,13 @@ if __name__ == "__main__":
 
     # modname = pathlib.__name__
     # runner.metadata["pathlib_module"] = modname
-
+    start = perf_counter_ns()
     tmp_path = setup(NUM_FILES)
     try:
         #     runner.bench_time_func("pathlib", bench_pathlib, tmp_path)
         bench_pathlib(1, tmp_path)
     finally:
         shutil.rmtree(tmp_path)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

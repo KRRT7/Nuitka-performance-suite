@@ -13,7 +13,7 @@ Concurrency by Jason Stitt
 """
 
 # import pyperf
-from time import perf_counter
+from time import perf_counter_ns
 
 
 DEFAULT_N = 130
@@ -50,7 +50,6 @@ def part_At_times_u(i_u):
 def bench_spectral_norm(loops):
     range_it = range(loops)
     # t0 = pyperf.perf_counter()
-    t0 = perf_counter()
 
     for _ in range_it:
         u = [1] * DEFAULT_N
@@ -66,7 +65,6 @@ def bench_spectral_norm(loops):
             vv += ve * ve
 
     # return pyperf.perf_counter() - t0
-    return perf_counter() - t0
 
 
 if __name__ == "__main__":
@@ -76,4 +74,8 @@ if __name__ == "__main__":
     #     "Challenge #3."
     # )
     # runner.bench_time_func("spectral_norm", bench_spectral_norm)
+    start = perf_counter_ns()
     bench_spectral_norm(8)
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

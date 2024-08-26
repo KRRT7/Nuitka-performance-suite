@@ -17,7 +17,7 @@ The `pidigits` benchmark does a similar thing using regular (long) ints.
 
 
 import decimal
-
+from time import perf_counter_ns
 
 # import pyperf
 
@@ -48,5 +48,8 @@ if __name__ == "__main__":
 
     # args = runner.parse_args()
     # runner.bench_func("decimal_pi", bench_decimal_pi)
-
+    start = perf_counter_ns()
     bench_decimal_pi()
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))

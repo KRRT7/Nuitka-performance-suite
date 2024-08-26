@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import AsyncIterator
 import asyncio
+from time import perf_counter_ns
 
 
 class Tree:
@@ -41,4 +42,8 @@ async def bench_async_generators() -> None:
 
 
 if __name__ == "__main__":
+    start = perf_counter_ns()
     asyncio.run(bench_async_generators())
+    end = perf_counter_ns()
+    with open("bench_time.txt", "w") as f:
+        f.write(str(end - start))
