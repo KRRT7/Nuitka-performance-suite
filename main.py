@@ -23,7 +23,7 @@ ITERATIONS = 1
 
 
 def main(python_version: str, nuitka_version: str) -> None:
-    benchmarks = get_benchmark_setup()[:1]
+    benchmarks = get_benchmark_setup()
     counter, len_benchmarks = 0, len(benchmarks)
     for benchmark in benchmarks:
         if check_if_excluded(benchmark):
