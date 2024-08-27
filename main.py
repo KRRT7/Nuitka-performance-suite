@@ -18,8 +18,7 @@ from benchengine import (
     check_if_excluded,
 )
 
-# ITERATIONS = 100
-ITERATIONS = 1
+ITERATIONS = 100
 
 
 def main(python_version: str, nuitka_version: str) -> None:
