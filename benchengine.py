@@ -4,7 +4,7 @@ import os
 import platform
 import sys
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from json import dump, load
 from pathlib import Path
 from statistics import mean
@@ -49,6 +49,111 @@ def check_if_excluded(benchmark: Path) -> bool:
 
 def centered_text(text: str) -> Align:
     return Align.center(Text(text))
+
+
+@dataclass
+class BenchmarkV2:
+    warmup: list[int] = field(default_factory=list)
+    benchmark: list[int] = field(default_factory=list)
+
+
+@dataclass
+class BenchmarkFile:
+    standard: BenchmarkV2 = field(default_factory=BenchmarkV2)
+    factory: BenchmarkV2 = field(default_factory=BenchmarkV2)
+
+
+@dataclass
+class BenchmarkHolder:
+    benchmark_name: str
+    python_version: str
+    CPython_benchmark: BenchmarkFile
+    Nuitka_benchmark: BenchmarkFile
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            self.python_version: {
+                "Standard": {
+                    "Nuitka": {
+                        "Warmup": self.Nuitka_benchmark.standard.warmup,
+                        "Benchmark": self.Nuitka_benchmark.standard.benchmark,
+                    },
+                    "CPython": {
+                        "Warmup": self.CPython_benchmark.standard.warmup,
+                        "Benchmark": self.CPython_benchmark.standard.benchmark,
+                    },
+                },
+                "Factory": {
+                    "Nuitka": {
+                        "Warmup": self.Nuitka_benchmark.factory.warmup,
+                        "Benchmark": self.Nuitka_benchmark.factory.benchmark,
+                    },
+                    "CPython": {
+                        "Warmup": self.CPython_benchmark.factory.warmup,
+                        "Benchmark": self.CPython_benchmark.factory.benchmark,
+                    },
+                },
+            }
+        }
+
+    @classmethod
+    def from_dict(
+        cls, benchmark_dict: dict[str, Any], benchmark_name: str, python_version: str
+    ) -> BenchmarkHolder:
+        standard = benchmark_dict["Standard"]
+        factory = benchmark_dict["Factory"]
+
+        standard_nuitka = standard["Nuitka"]
+        standard_cpython = standard["CPython"]
+
+        factory_nuitka = factory["Nuitka"]
+        factory_cpython = factory["CPython"]
+
+        return cls(
+            benchmark_name,
+            python_version,
+            BenchmarkFile(
+                BenchmarkV2(
+                    standard_nuitka["Warmup"],
+                    standard_nuitka["Benchmark"],
+                ),
+                BenchmarkV2(
+                    factory_nuitka["Warmup"],
+                    factory_nuitka["Benchmark"],
+                ),
+            ),
+            BenchmarkFile(
+                BenchmarkV2(
+                    standard_cpython["Warmup"],
+                    standard_cpython["Benchmark"],
+                ),
+                BenchmarkV2(
+                    factory_cpython["Warmup"],
+                    factory_cpython["Benchmark"],
+                ),
+            ),
+        )
+
+
+@dataclass
+class Benchmarks:
+    benchmarks_name: str
+    benchmarks: list[BenchmarkHolder] = field(default_factory=list)
+
+    def add_benchmark(self, benchmark: BenchmarkHolder) -> None:
+        self.benchmarks.append(benchmark)
+
+    def from_json_file(self, file_path: Path) -> None:
+        with open(file_path) as f:
+            contents: dict[str, dict[str, dict[str, dict[str, list[int]]]]] = load(f)
+
+        for python_version in contents:
+            benchmark = BenchmarkHolder.from_dict(
+                contents[python_version], self.benchmarks_name, python_version
+            )
+            self.add_benchmark(benchmark)
+        print(self.benchmarks)
+        raise NotImplementedError("This method is not implemented yet")
 
 
 @dataclass
@@ -167,6 +272,7 @@ class Benchmark:
             difference = (nuitka_stats - cpython_stats) / cpython_stats * 100
             return Align.center(Text(f"{difference:.2f}%", style="yellow"))
 
+
 @contextmanager
 def temporary_directory_change(path: Path) -> Iterator[None]:
     if not path.exists():
@@ -187,11 +293,9 @@ def run_benchmark(
     count: int,
     number_of_benchmarks: int,
     compilation_type: Literal["onefile", "standalone", "accelerated"] = "accelerated",
-) -> dict[str, list[int]]:
-    local_results: dict[str, list[int]] = {
-        "warmup": [],
-        "benchmark": [],
-    }
+) -> tuple[list[int], list[int]]:
+    warmup_results: list[int] = []
+    benchmark_results: list[int] = []
 
     comp_types = {
         "accelerated": {
@@ -228,11 +332,11 @@ def run_benchmark(
         if res.returncode != 0:
             msg = f"Failed to run benchmark {benchmark.name} due to {res.stderr!r}"
             raise RuntimeError(msg)
-        
+
         with open("bench_time.txt") as f:
             time_taken = int(f.read())
-        
-        local_results["warmup"].append(time_taken)
+
+        warmup_results.append(time_taken)
 
     for _ in track(
         range(iterations),
@@ -243,15 +347,15 @@ def run_benchmark(
         if res.returncode != 0:
             msg = f"Failed to run benchmark {benchmark.name}"
             raise RuntimeError(msg)
-        
+
         with open("bench_time.txt") as f:
             time_taken = int(f.read())
 
-        local_results["benchmark"].append(time_taken)
+        benchmark_results.append(time_taken)
 
     print(f"Completed benchmarking {benchmark.name} with {type}")
 
-    return local_results
+    return warmup_results, benchmark_results
 
 
 def is_in_venv() -> bool:
@@ -288,7 +392,7 @@ def get_visualizer_setup(
                     print(e)
                     continue
                 benchmark_case_group.append(benchmark)
-        benchmark_case_group.sort(key=lambda x: x.python_version, reverse=True) #type: ignore
+        benchmark_case_group.sort(key=lambda x: x.python_version, reverse=True)  # type: ignore
 
         yield benchmark.name, benchmark_case_group
 
