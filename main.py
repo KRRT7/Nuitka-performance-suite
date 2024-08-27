@@ -84,7 +84,7 @@ def main(python_version: str, nuitka_version: str) -> None:
                     number_of_benchmarks=len_benchmarks,
                 )
 
-                if nuitka_version == "standard":
+                if nuitka_version.lower() == "standard":
                     current_benchmark.Nuitka_benchmark.standard.warmup.extend(
                         nuitka_result_warmup
                     )
@@ -98,7 +98,7 @@ def main(python_version: str, nuitka_version: str) -> None:
                     current_benchmark.CPython_benchmark.standard.benchmark.extend(
                         cpython_result_benchmark
                     )
-                elif nuitka_version == "factory":
+                elif nuitka_version.lower() == "factory":
                     current_benchmark.Nuitka_benchmark.factory.warmup.extend(
                         nuitka_result_warmup
                     )
