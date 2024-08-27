@@ -138,22 +138,37 @@ class BenchmarkHolder:
 @dataclass
 class Benchmarks:
     benchmarks_name: str
-    benchmarks: list[BenchmarkHolder] = field(default_factory=list)
+    benchmarks: dict[str, BenchmarkHolder] = field(default_factory=dict)
 
     def add_benchmark(self, benchmark: BenchmarkHolder) -> None:
-        self.benchmarks.append(benchmark)
+        self.benchmarks[benchmark.python_version] = benchmark
 
     def from_json_file(self, file_path: Path) -> None:
         with open(file_path) as f:
             contents: dict[str, dict[str, dict[str, dict[str, list[int]]]]] = load(f)
+
+        if not contents:
+            return
 
         for python_version in contents:
             benchmark = BenchmarkHolder.from_dict(
                 contents[python_version], self.benchmarks_name, python_version
             )
             self.add_benchmark(benchmark)
-        print(self.benchmarks)
-        raise NotImplementedError("This method is not implemented yet")
+
+    def get_or_create_benchmark(self, python_version: str) -> BenchmarkHolder:
+        if python_version not in self.benchmarks:
+            self.benchmarks[python_version] = BenchmarkHolder(
+                self.benchmarks_name, python_version, BenchmarkFile(), BenchmarkFile()
+            )
+        return self.benchmarks[python_version]
+
+    def to_json_file(self, file_path: Path) -> None:
+        contents = {}
+        for _, benchmark in self.benchmarks.items():
+            contents.update(benchmark.to_dict())
+        with open(file_path, "w") as f:
+            dump(contents, f)
 
 
 @dataclass

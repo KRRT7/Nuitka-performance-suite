@@ -167,7 +167,7 @@ cython_debug/
 *run_benchmark.exe
 
 # Perf suite results
-*-*-*.json
+**.json
 *bench_time.txt
 # internal sampler
 # sample/

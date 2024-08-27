@@ -9,6 +9,7 @@ from benchengine import (
     Benchmark,
     BenchmarkHolder,
     Benchmarks,
+    BenchmarkFile,
     Stats,
     get_benchmark_setup,
     run_benchmark,
@@ -22,7 +23,7 @@ ITERATIONS = 1
 
 
 def main(python_version: str, nuitka_version: str) -> None:
-    benchmarks = get_benchmark_setup()[:10]
+    benchmarks = get_benchmark_setup()[:1]
     counter, len_benchmarks = 0, len(benchmarks)
     for benchmark in benchmarks:
         if check_if_excluded(benchmark):
@@ -35,15 +36,18 @@ def main(python_version: str, nuitka_version: str) -> None:
         results_dir = orig_path / "results"
         results_file = results_dir / f"{CURRENT_PLATFORM}.json"
 
-        bench_result_V2: Benchmarks = Benchmarks(benchmarks_name=benchmark.name)
-        if results_file.exists() and results_file.stat().st_size > 0:
+        benchmarks_obj: Benchmarks = Benchmarks(benchmarks_name=benchmark.name)
 
-            results = bench_result_V2.from_json_file(results_file)
+        if results_file.exists() and results_file.stat().st_size > 0:
+            benchmarks_obj.from_json_file(results_file)
 
         elif not results_dir.exists():
             results_dir.mkdir(parents=True, exist_ok=True)
         results_file.touch(exist_ok=True)
 
+        current_benchmark = benchmarks_obj.get_or_create_benchmark(
+            NORMALIZED_PYTHON_VERSION
+        )
         with temporary_directory_change(benchmark):
             requirements_path = orig_path / "requirements.txt"
             if not (orig_path / "run_benchmark.py").exists():
@@ -81,35 +85,38 @@ def main(python_version: str, nuitka_version: str) -> None:
                 )
 
                 if nuitka_version == "standard":
-                    bench_result_V2.Nuitka_benchmark.standard.warmup.extend(
+                    current_benchmark.Nuitka_benchmark.standard.warmup.extend(
                         nuitka_result_warmup
                     )
-                    bench_result_V2.Nuitka_benchmark.standard.benchmark.extend(
+                    current_benchmark.Nuitka_benchmark.standard.benchmark.extend(
                         nuitka_result_benchmark
                     )
 
-                    bench_result_V2.CPython_benchmark.standard.warmup.extend(
+                    current_benchmark.CPython_benchmark.standard.warmup.extend(
                         cpython_result_warmup
                     )
-                    bench_result_V2.CPython_benchmark.standard.benchmark.extend(
+                    current_benchmark.CPython_benchmark.standard.benchmark.extend(
                         cpython_result_benchmark
                     )
                 elif nuitka_version == "factory":
-                    bench_result_V2.Nuitka_benchmark.factory.warmup.extend(
+                    current_benchmark.Nuitka_benchmark.factory.warmup.extend(
                         nuitka_result_warmup
                     )
-                    bench_result_V2.Nuitka_benchmark.factory.benchmark.extend(
+                    current_benchmark.Nuitka_benchmark.factory.benchmark.extend(
                         nuitka_result_benchmark
                     )
 
-                    bench_result_V2.CPython_benchmark.factory.warmup.extend(
+                    current_benchmark.CPython_benchmark.factory.warmup.extend(
                         cpython_result_warmup
                     )
-                    bench_result_V2.CPython_benchmark.factory.benchmark.extend(
+                    current_benchmark.CPython_benchmark.factory.benchmark.extend(
                         cpython_result_benchmark
                     )
                 else:
                     raise ValueError("Invalid Nuitka version")
+
+                benchmarks_obj.add_benchmark(current_benchmark)
+                benchmarks_obj.to_json_file(results_file)
 
             except KeyboardInterrupt:
                 print(
