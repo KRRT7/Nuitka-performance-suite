@@ -196,7 +196,6 @@ def bench_etree(iterations, etree, bench_func):
         except EnvironmentError:
             pass
 
-    return dt
 
 
 BENCHMARKS = "parse iterparse generate process".split()
@@ -299,7 +298,7 @@ if __name__ == "__main__":
         bench_func = globals()["bench_%s" % bench]
         # runner.bench_time_func(name, bench_etree, etree_module, bench_func)
         iterations = 2
-        dt = bench_etree(iterations, et, bench_func)
+        bench_etree(iterations, et, bench_func)
 
     end = perf_counter_ns()
     with open("bench_time.txt", "w") as f:
