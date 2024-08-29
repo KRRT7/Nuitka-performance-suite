@@ -467,7 +467,7 @@ def setup_benchmark_enviroment(
         cmd = "--lto=yes"  # let's not use PGO for now
         if CURRENT_PLATFORM == "Linux":
             # cmd += " --static-libpython=yes --pgo-c --pgo-python"
-            cmd += " --static-libpython=yes --pgo-c"
+            cmd += " --static-libpython=yes"
         commands = [
             f"{python_executable} -m nuitka --output-dir=run_benchmark.dist {cmd} run_benchmark.py".split()
         ]
