@@ -163,6 +163,46 @@ class Benchmarks:
             )
         return self.benchmarks[python_version]
 
+    def verify_benchmark_presence(
+        self, python_version: str, nuitka_version: str
+    ) -> bool:
+        inf_dict = self.benchmarks.get(python_version)
+        if not inf_dict:
+            return False
+
+        if nuitka_version == "standard":
+            standard_warmup_cpython = bool(inf_dict.CPython_benchmark.standard.warmup)
+            standard_benchmark_cpython = bool(
+                inf_dict.CPython_benchmark.standard.benchmark
+            )
+            standard_warmup_nuitka = bool(inf_dict.Nuitka_benchmark.standard.warmup)
+            standard_benchmark_nuitka = bool(
+                inf_dict.Nuitka_benchmark.standard.benchmark
+            )
+            return all(
+                [
+                    standard_warmup_cpython,
+                    standard_benchmark_cpython,
+                    standard_warmup_nuitka,
+                    standard_benchmark_nuitka,
+                ]
+            )
+        elif nuitka_version == "factory":
+            factory_warmup_cpython = inf_dict.CPython_benchmark.factory.warmup
+            factory_benchmark_cpython = inf_dict.CPython_benchmark.factory.benchmark
+            factory_warmup_nuitka = inf_dict.Nuitka_benchmark.factory.warmup
+            factory_benchmark_nuitka = inf_dict.Nuitka_benchmark.factory.benchmark
+            return all(
+                [
+                    bool(factory_warmup_cpython),
+                    bool(factory_benchmark_cpython),
+                    bool(factory_warmup_nuitka),
+                    bool(factory_benchmark_nuitka),
+                ]
+            )
+        else:
+            raise ValueError(f"Invalid Nuitka version, got {nuitka_version}")
+
     def to_json_file(self, file_path: Path) -> None:
         contents = {}
         for _, benchmark in self.benchmarks.items():
