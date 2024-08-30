@@ -40,6 +40,15 @@ def main(python_version: str, nuitka_version: str) -> None:
         if results_file.exists() and results_file.stat().st_size > 0:
             benchmarks_obj.from_json_file(results_file)
 
+        if benchmarks_obj.verify_benchmark_presence(
+            NORMALIZED_PYTHON_VERSION, nuitka_version
+        ):
+            print(
+                f"Skipping benchmark {benchmark.name}, because it has already been run with {NORMALIZED_PYTHON_VERSION} and {nuitka_version}"
+            )
+            counter += 1
+            continue
+
         elif not results_dir.exists():
             results_dir.mkdir(parents=True, exist_ok=True)
         results_file.touch(exist_ok=True)
