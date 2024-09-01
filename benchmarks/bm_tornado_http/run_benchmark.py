@@ -62,7 +62,6 @@ def bench_tornado(loops):
     server, sock = make_http_server(make_application())
     host, port = sock.getsockname()
     url = "http://%s:%s/" % (host, port)
-    namespace = {}
 
     @coroutine
     def run_client():
@@ -84,7 +83,6 @@ def bench_tornado(loops):
     IOLoop.current().run_sync(run_client)
     server.stop()
 
-    return namespace["dt"]
 
 
 if __name__ == "__main__":
