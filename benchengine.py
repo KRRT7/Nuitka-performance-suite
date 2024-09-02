@@ -32,7 +32,7 @@ TEST_BENCHMARK_DIRECTORY = Path(__file__).parent / "benchmarks_test"
 
 
 EXCLUSIONS: dict[str, dict[tuple[int, int], list[str]]] = {
-    "Linux": {(3, 9): ["bm_django_template"]},
+    "Linux": {(3, 9): ["bm_django_template"], (3, 12): ["bm_2to3"]},
     "Windows": {(3, 9): ["bm_django_template"]},
 }
 
@@ -151,17 +151,19 @@ class Benchmarks:
             return
 
         for python_version in contents:
+            print(f"Loading benchmarks for Python {python_version}")
             benchmark = BenchmarkHolder.from_dict(
                 contents[python_version], self.benchmarks_name, python_version
             )
             self.add_benchmark(benchmark)
 
     def get_or_create_benchmark(self, python_version: str) -> BenchmarkHolder:
-        if python_version not in self.benchmarks:
-            self.benchmarks[python_version] = BenchmarkHolder(
+        return self.benchmarks.setdefault(
+            python_version,
+            BenchmarkHolder(
                 self.benchmarks_name, python_version, BenchmarkFile(), BenchmarkFile()
-            )
-        return self.benchmarks[python_version]
+            ),
+        )
 
     def verify_benchmark_presence(
         self, python_version: str, nuitka_version: str
@@ -209,6 +211,12 @@ class Benchmarks:
             contents.update(benchmark.to_dict())
         with open(file_path, "w") as f:
             dump(contents, f)
+
+    def get_visualizer_setup(
+        self,
+    ) -> Generator[tuple[str, BenchmarkHolder], None, None]:
+        for python_version, benchmark in self.benchmarks.items():
+            yield python_version, benchmark
 
 
 @dataclass
@@ -426,30 +434,33 @@ def _get_benchmarks(test: bool = False) -> Iterator[Path]:
         yield benchmark_case
 
 
-def get_visualizer_setup(
-    test: bool = False,
-) -> Generator[tuple[str, list[Benchmark]], None, None]:
-    for _benchmark in _get_benchmarks(test=test):
-        results_dir = _benchmark / "results"
-        if not results_dir.exists():
-            print(
-                f"Skipping benchmark {_benchmark.name}, because {results_dir} does not exist"
-            )
+# def get_visualizer_setup(
+#     test: bool = False,
+#     # ) -> Generator[tuple[str, list[Benchmark]], None, None]:
+# ) -> Generator[tuple[str, Benchmarks], None, None]:
+#     for _benchmark in _get_benchmarks(test=test):
+#         results_dir = _benchmark / "results"
+#         if not results_dir.exists():
+#             print(
+#                 f"Skipping benchmark {_benchmark.name}, because {results_dir} does not exist"
+#             )
+#             continue
+
+#         # return Benchmarks.from_json_file(results_dir / f"{CURRENT_PLATFORM}.json")
+#         benchmarks = Benchmarks(benchmarks_name=_benchmark.name)
+#         benchmarks.from_json_file(results_dir / f"{CURRENT_PLATFORM}.json")
+#         yield _benchmark.name, benchmarks
+
+
+def get_visualizer_setup(test: bool = False):
+    benchmarks = Benchmarks(benchmarks_name="Visualizer")
+    for benchmark in _get_benchmarks(test=test):
+        results_dir = benchmark / "results"
+        file = results_dir / f"{CURRENT_PLATFORM}.json"
+        if not results_dir.exists() or file.stat().st_size == 0:
             continue
-
-        benchmark_case_group: list[Benchmark] = []
-
-        for result in results_dir.iterdir():
-            if result.is_file():
-                try:
-                    benchmark = Benchmark.from_path(result, _benchmark.name)
-                except FileNotFoundError as e:
-                    print(e)
-                    continue
-                benchmark_case_group.append(benchmark)
-        benchmark_case_group.sort(key=lambda x: x.python_version, reverse=True)  # type: ignore
-
-        yield benchmark.name, benchmark_case_group
+        benchmarks.from_json_file(file)
+    return benchmarks
 
 
 def get_benchmark_setup() -> list[Path]:
