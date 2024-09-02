@@ -151,7 +151,6 @@ class Benchmarks:
             return
 
         for python_version in contents:
-            print(f"Loading benchmarks for Python {python_version}")
             benchmark = BenchmarkHolder.from_dict(
                 contents[python_version], self.benchmarks_name, python_version
             )
