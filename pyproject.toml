@@ -1,11 +1,27 @@
 [[tool.hatch.envs.main.matrix]]
-python = ["3.12", "3.11", "3.10", "3.9", "3.8"]
+python = ["3.12", "3.11", "3.10", "3.9", "3.8"] #add 3.13 here as well, this will enable 3.13 (GIL) support
 nuitka = ["standard", "factory"]
 
+
+# [[tool.hatch.envs.main.matrix]] #enable this when we have 3.13 / 3.13 "freethreaded" (noGIL) support
+# python = ["3.13"] #add 3.13 here as well, this will enable 3.13 (NoGIL) support
+# gil = ["freethreaded"]
+# nuitka = ["standard", "factory"]
+
 [tool.hatch.envs.main.overrides]
+# matrix.gil.env-vars = [
+#     { key = "HATCH_PYTHON_VARIANT_GIL", value = "freethreaded", if = [
+#         "freethreaded",
+#     ] },
+# ]
 matrix.nuitka.dependencies = [
-    {value = "nuitka", if = ["standard"]},
-    {value = "nuitka @ https://github.com/Nuitka/Nuitka/archive/factory.zip", if = ["factory"]},
+    { value = "nuitka", if = [
+        "standard",
+    ] },
+    # {value = "nuitka @ https://github.com/Nuitka/Nuitka/archive/factory.zip", if = ["factory"]},
+    { value = "nuitka @ git+https://github.com/Nuitka/Nuitka.git@91d5ba82b7c20e908ebd60fb1eea05880d779e9b", if = [
+        "factory",
+    ] },
 ]
 
 [tool.hatch.envs.main]
