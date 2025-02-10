@@ -51,4 +51,4 @@ def compile_benchmark(benchmark_path: Path) -> None:
         # console.clear(False)  # wait until we run more benchmarks
         if result.returncode != 0:
             raise RuntimeError(f"Failed to compile benchmark: {result.stderr}")
-    utils.cleanup(benchmark_path, to_keep)
+    # utils.cleanup(benchmark_path, to_keep)

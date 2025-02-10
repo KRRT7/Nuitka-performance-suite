@@ -1,5 +1,7 @@
 from rework.tvenv import compile_benchmark
-from rework.utils import console, get_benchmarks
+from rework.utils import console, get_benchmarks, cleanup
+from rich.live import Live
+from rich.progress import track
 from pathlib import Path
 from rich import print
 from rich.progress import track
@@ -36,16 +38,21 @@ class Benchmark:
 
 
 def main():
-    benchmarks = get_benchmarks(Path.cwd() / "benchmarks")
-    # _dummy_benchmark = Path(
-    #     "/Users/krrt7/Desktop/personal/Nuitka-performance-suite/benchmarks/bm_tomli_loads"
-    # )
-    # compile_benchmark(_dummy_benchmark)
-    # benchmark = Benchmark(benchmark=_dummy_benchmark)
-    # # # benchmark.run()
-    # # print("Done")
-    for benchmark in benchmarks:
+    benchmarks = list(get_benchmarks(Path.cwd() / "benchmarks"))
+    for benchmark in track(
+        benchmarks,
+        description="Compiling benchmarks",
+        console=console,
+        auto_refresh=False,
+        total=len(benchmarks),
+    ):
+        console.rule(f"Compiling {benchmark.name}")
         compile_benchmark(benchmark)
+        # delete any files in the benchmark directory that contains "uv" in the name
+        cleanup(
+            benchmark,
+            to_keep=[file for file in benchmark.iterdir() if "uv" not in file.name],
+        )
         # benchmark = Benchmark(benchmark=benchmark)
         # benchmark.run_benchmark()
 

@@ -122,14 +122,24 @@ def run_command_in_subprocess(
     process = subprocess.Popen(
         command,
         env=_get_envvars(),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
         text=True,
+        bufsize=1,
     )
 
-    process.wait()
+    while True:
+        output = process.stdout.readline()
+        if output == "" and process.poll() is not None:
+            break
+        if output:
+            console.print(output.strip())
+
+    returncode = process.wait()
 
     return subprocess.CompletedProcess(
         args=command,
-        returncode=process.returncode,
+        returncode=returncode,
     )
 
 
