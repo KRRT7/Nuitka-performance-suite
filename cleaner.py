@@ -4,7 +4,7 @@ import shutil
 
 def main():
     paths = Path.cwd().rglob("*")
-    keywords = {"uv", "run_benchmark.bin"}
+    keywords = {"uv", "run_benchmark.bin", "venv", "egg-info"}
 
     for path in paths:
         name = path.name
