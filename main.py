@@ -46,9 +46,8 @@ def main():
         auto_refresh=False,
         total=len(benchmarks),
     ):
-        console.rule(f"Compiling {benchmark.name}")
+        console.rule(f"Compiling {benchmark.name} @ {benchmark}")
         compile_benchmark(benchmark)
-        # delete any files in the benchmark directory that contains "uv" in the name
         cleanup(
             benchmark,
             to_keep=[file for file in benchmark.iterdir() if "uv" not in file.name],
