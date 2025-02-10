@@ -172,3 +172,4 @@ benchmarks_*/
 # sample/
 
 MRE.py
+*.DS_Store
