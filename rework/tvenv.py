@@ -10,7 +10,11 @@ class Requirements:
 
     def uv_sync_list(self) -> list[str]:
         requirements = []
-        prereqs = ["wheel", "setuptools", "nuitka"]
+        prereqs = [
+            "wheel",
+            "setuptools",
+            "git+https://github.com/KRRT7/Nuitka@thin-flto",
+        ]
         for prereq in prereqs:
             requirements.extend(["--with", prereq])
         if not self.path.exists():
@@ -44,6 +48,9 @@ def compile_benchmark(benchmark_path: Path) -> None:
             # "--pgo-python",
             "--lto=yes",
             "--remove-output",
+            "--assume-yes-for-downloads",
+            "--low-memory",
+            # "--run", # wait until i preprocess the bechmarks to patch the pathlib imports
             "run_benchmark.py",
         ]
 
