@@ -1,10 +1,8 @@
 from rework.tvenv import compile_benchmark
 from rework.utils import console, get_benchmarks, cleanup
-from rich.live import Live
 from rich.progress import track
 from pathlib import Path
 from rich import print
-from rich.progress import track
 from functools import partial
 
 

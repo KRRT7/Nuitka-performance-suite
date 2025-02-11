@@ -11,10 +11,7 @@ from Utilities import (
 )
 import platform
 import shutil
-from subprocess import run, PIPE
 from rich import print
-import json
-from datetime import datetime
 from itertools import product
 
 ITERATIONS = 100

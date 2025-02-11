@@ -1,7 +1,7 @@
 from pathlib import Path
 from rework import utils
 
-from rework.utils import console
+from rework.benchmark_prepare import prepare_benchmark_file
 
 
 class Requirements:
@@ -30,8 +30,9 @@ class Requirements:
 
 def compile_benchmark(benchmark_path: Path) -> None:
     requirements = Requirements(benchmark_path / "requirements.txt").uv_sync_list()
-
-    to_keep = list(benchmark_path.iterdir())
+    run_benchmark_path = benchmark_path / "run_benchmark.py"
+    original_contents = run_benchmark_path.read_text()
+    prepare_benchmark_file(benchmark_path)
     with utils.temporary_directory_change(benchmark_path):
         build_command = [
             "uv",
@@ -49,8 +50,8 @@ def compile_benchmark(benchmark_path: Path) -> None:
             "--lto=yes",
             "--remove-output",
             "--assume-yes-for-downloads",
-            "--low-memory",
-            # "--run", # wait until i preprocess the bechmarks to patch the pathlib imports
+            # "--low-memory", # only needed in GH actions
+            "--run",  # wait until i preprocess the bechmarks to patch the pathlib imports
             "run_benchmark.py",
         ]
 
@@ -58,4 +59,6 @@ def compile_benchmark(benchmark_path: Path) -> None:
         # console.clear(False)  # wait until we run more benchmarks
         if result.returncode != 0:
             raise RuntimeError(f"Failed to compile benchmark: {result.stderr}")
+    with run_benchmark_path.open("w") as f:
+        f.write(original_contents)
     # utils.cleanup(benchmark_path, to_keep)
