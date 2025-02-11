@@ -51,14 +51,12 @@ def compile_benchmark(benchmark_path: Path) -> None:
             "--remove-output",
             "--assume-yes-for-downloads",
             # "--low-memory", # only needed in GH actions
-            "--run",  # wait until i preprocess the bechmarks to patch the pathlib imports
+            "--run",
             "run_benchmark.py",
         ]
 
         result = utils.run_command_in_subprocess(build_command)
-        # console.clear(False)  # wait until we run more benchmarks
         if result.returncode != 0:
             raise RuntimeError(f"Failed to compile benchmark: {result.stderr}")
     with run_benchmark_path.open("w") as f:
         f.write(original_contents)
-    # utils.cleanup(benchmark_path, to_keep)
