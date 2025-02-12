@@ -50,6 +50,7 @@ def compile_benchmark(benchmark_path: Path) -> None:
             "--lto=yes",
             "--remove-output",
             "--assume-yes-for-downloads",
+            "--clang",
             # "--low-memory", # only needed in GH actions
             "--run",
             "run_benchmark.py",
