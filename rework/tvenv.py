@@ -43,6 +43,8 @@ def compile_benchmark(benchmark_path: Path) -> None:
 
         build_command += [
             "--",
+            "python",
+            "-m",
             "nuitka",
             "--onefile",
             # "--pgo-c", #PGO is currently broken, open issue on Nuitka
