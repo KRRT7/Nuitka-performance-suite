@@ -19,12 +19,8 @@ class Requirements:
             requirements.extend(["--with", prereq])
         if not self.path.exists():
             return requirements
-        with self.path.open("r") as file:
-            for line in file:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                requirements.extend(["--with", line])
+
+        requirements.extend(["--with-requirements", self.path.as_posix()])
         return requirements
 
 
