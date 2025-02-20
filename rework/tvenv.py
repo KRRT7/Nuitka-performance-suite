@@ -17,8 +17,8 @@ class Requirements:
         prereqs = [
             "wheel",
             "setuptools",
-            # "git+https://github.com/KRRT7/Nuitka@thin-flto",
-            "nuitka",
+            "git+https://github.com/KRRT7/Nuitka@thin-flto",
+            # "nuitka",
         ]
         for prereq in prereqs:
             requirements.extend(["--with", prereq])
@@ -54,6 +54,7 @@ def compile_benchmark(benchmark_path: Path) -> None:
             "--remove-output",
             "--assume-yes-for-downloads",
             "--clang",
+            "--disable-cache=all",
             # "--low-memory", # only needed in GH actions
             "--run",
         ]
