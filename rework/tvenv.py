@@ -55,8 +55,10 @@ def compile_benchmark(benchmark_path: Path) -> None:
             "--clang",
             # "--low-memory", # only needed in GH actions
             "--run",
-            "run_benchmark.py",
         ]
+        if MS_WINDOWS:
+            build_command.append("--mingw64")
+        build_command.append("run_benchmark.py")
 
         result = run_command_in_subprocess(build_command)
         if result.returncode != 0:

@@ -4,9 +4,13 @@ on:
 jobs:
   run-main-script:
     strategy:
+      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
+          - windows-latest
+          # - macos-latest too costly
+    name: Run on ${{ matrix.os }}
     runs-on: "${{ matrix.os }}"
     steps:
       - name: Checkout the repository
