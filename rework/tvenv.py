@@ -17,7 +17,8 @@ class Requirements:
         prereqs = [
             "wheel",
             "setuptools",
-            "git+https://github.com/KRRT7/Nuitka@thin-flto",
+            # "git+https://github.com/KRRT7/Nuitka@thin-flto",
+            "nuitka",
         ]
         for prereq in prereqs:
             requirements.extend(["--with", prereq])
