@@ -1,5 +1,9 @@
 from pathlib import Path
-from rework import utils
+from rework.utils import (
+    temporary_directory_change,
+    run_command_in_subprocess,
+    MS_WINDOWS,
+)
 
 from rework.benchmark_prepare import prepare_benchmark_file
 
@@ -29,7 +33,7 @@ def compile_benchmark(benchmark_path: Path) -> None:
     run_benchmark_path = benchmark_path / "run_benchmark.py"
     original_contents = run_benchmark_path.read_text()
     prepare_benchmark_file(benchmark_path)
-    with utils.temporary_directory_change(benchmark_path):
+    with temporary_directory_change(benchmark_path):
         build_command = [
             "uv",
             "run",
@@ -54,8 +58,29 @@ def compile_benchmark(benchmark_path: Path) -> None:
             "run_benchmark.py",
         ]
 
-        result = utils.run_command_in_subprocess(build_command)
+        result = run_command_in_subprocess(build_command)
         if result.returncode != 0:
             raise RuntimeError(f"Failed to compile benchmark: {result.stderr}")
     with run_benchmark_path.open("w") as f:
         f.write(original_contents)
+
+
+def run_benchmark(benchmark_path: Path, iterations: int = 5) -> None:
+    with temporary_directory_change(benchmark_path):
+        command = [
+            "hyperfine",
+            "--show-output",
+            "--warmup",
+            "10",
+        ]
+        if (benchmark_path / "requirements.txt").exists():
+            command += [
+                "--setup",
+                "uv venv && uv pip install -r requirements.txt",
+            ]
+        command.append("uv run script.py")
+        command.append("run_benchmark.exe" if MS_WINDOWS else "./run_benchmark.bin")
+        command.append("uv run run_benchmark.py")
+        result = run_command_in_subprocess(command)
+        if result.returncode != 0:
+            raise RuntimeError(f"Failed to run benchmark: {result.stderr}")

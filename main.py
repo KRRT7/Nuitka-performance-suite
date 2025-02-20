@@ -1,4 +1,4 @@
-from rework.tvenv import compile_benchmark
+from rework.tvenv import compile_benchmark, run_benchmark
 from rework.utils import console, get_benchmarks, cleanup
 from rich.progress import track
 from pathlib import Path
@@ -44,8 +44,10 @@ def main():
         auto_refresh=False,
         total=len(benchmarks),
     ):
-        console.rule(f"Compiling {benchmark.name} @ {benchmark}")
+        fname = f"{benchmark.parent.name}/{benchmark.name}"
+        console.rule(f"Compiling {benchmark.name} @ {fname}")
         compile_benchmark(benchmark)
+        # run_benchmark(benchmark)
         cleanup(
             benchmark,
             to_keep=[file for file in benchmark.iterdir() if "uv" not in file.name],
