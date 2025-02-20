@@ -21,8 +21,10 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
-      - name: Install Python 3.12
-        run: uv python install 3.12
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - name: Run our main script
         env:
           PYTHONIOENCODING: utf8
