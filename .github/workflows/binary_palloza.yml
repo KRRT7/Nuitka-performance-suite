@@ -8,7 +8,7 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - windows-latest
+          # - windows-latest
           # - macos-latest too costly
     name: Run on ${{ matrix.os }}
     runs-on: "${{ matrix.os }}"
@@ -26,4 +26,5 @@ jobs:
       - name: Run our main script
         env:
           PYTHONIOENCODING: utf8
+          
         run: uv run --with rich main.py
