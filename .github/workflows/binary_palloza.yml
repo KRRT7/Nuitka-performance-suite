@@ -24,4 +24,6 @@ jobs:
       - name: Install Python 3.12
         run: uv python install 3.12
       - name: Run our main script
+        env:
+          PYTHONIOENCODING: utf8
         run: uv run --with rich main.py
