@@ -1,4 +1,4 @@
-name: Main Script
+name: Main Script Windows-self-hosted
 on:
   workflow_dispatch: null
 jobs:
@@ -8,15 +8,6 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@main
-      - name: ccache
-        uses: hendrikmuhs/ccache-action@v1.2
-      - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
       - name: Run our main script
         env:
           PYTHONIOENCODING: utf8
