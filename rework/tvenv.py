@@ -32,10 +32,9 @@ def compile_benchmark(benchmark_path: Path) -> None:
                 ["uv", "pip", "install", "-r", "requirements.txt"]
             )
 
-        command = ["uvx"]
+        command = ["uvx", "--with", "setuptools", "--with", "wheel"]
         if reqs_exist:
             command += ["--with-requirements", requirements.as_posix()]
-            command += ["--with", "setuptools", "--with", "wheel"]
 
         command += [
             "nuitka",
@@ -55,16 +54,19 @@ def compile_benchmark(benchmark_path: Path) -> None:
         f.write(original_contents)
 
 
-def run_benchmark(benchmark_path: Path, iterations: int = 5) -> None:
+def run_benchmark(benchmark_path: Path, iterations: int = 50) -> None:
     with temporary_directory_change(benchmark_path):
         command = [
             "hyperfine",
             "--show-output",
             "--warmup",
-            "10",
+            "50",
+            "--min-runs",
+            str(iterations),
+            "./run_benchmark.bin",
+            ".venv/bin/python run_benchmark.py",
         ]
-        command.append("run_benchmark.exe" if MS_WINDOWS else "./run_benchmark.bin")
-        command.append(".venv/bin/python run_benchmark.py")
+        # command.append("run_benchmark.exe" if MS_WINDOWS else "./run_benchmark.bin") # for windows in the future
         result = run_command_in_subprocess(command)
         if result.returncode != 0:
             raise RuntimeError(f"Failed to run benchmark: {result.stderr}")

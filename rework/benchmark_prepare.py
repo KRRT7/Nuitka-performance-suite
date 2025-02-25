@@ -109,6 +109,7 @@ class ReplacementVisitor(BaseReplacementVisitor):
                 self.replace_child(parent, node, new_node)
         self.generic_visit(node)
 
+
 def prepare_benchmark_file(benchmark_path: Path):
     run_benchmark_path = benchmark_path / "run_benchmark.py"
     replacement = mapping.get(benchmark_path.name, None)
@@ -119,7 +120,7 @@ def prepare_benchmark_file(benchmark_path: Path):
     with run_benchmark_path.open("r") as f:
         tree = ast.parse(f.read())
 
-    visitors = [
+    visitors: list[FileParentReplacementVisitor | ReplacementVisitor] = [
         ReplacementVisitor(benchmark_path, replacement),
         FileParentReplacementVisitor(),
     ]
