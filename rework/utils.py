@@ -152,15 +152,17 @@ def temporary_directory_change(path: Path) -> Iterator[None]:
     yield
     os.chdir(current_directory)
 
+def clean() -> None:
+    paths = Path.cwd().rglob("*")
+    keywords = {"uv", "run_benchmark.bin", "egg-info" "run_benchmark.bin"}
 
-def cleanup(parent: Path, to_keep: list[Path]) -> None:
-    for path in parent.iterdir():
-        if path not in to_keep:
+    for path in paths:
+        name = path.name
+        if any(keyword in name for keyword in keywords) or name == ".venv":
             if path.is_dir():
                 shutil.rmtree(path)
-            else:
+            elif path.is_file():
                 path.unlink()
-
 
 def get_benchmarks(bechmark_dir: Path) -> Iterator[Path]:
     for benchmark_case in bechmark_dir.iterdir():

@@ -1,7 +1,9 @@
 from rework.tvenv import compile_benchmark, run_benchmark
-from rework.utils import console, get_benchmarks, cleanup
+from rework.utils import console, get_benchmarks, clean
 from rich.progress import track
 from pathlib import Path
+from argparse import ArgumentParser
+
 
 def main():
     benchmarks = list(get_benchmarks(Path.cwd() / "benchmarks"))
@@ -16,11 +18,20 @@ def main():
         console.rule(f"Compiling {benchmark.name} @ {fname}")
         compile_benchmark(benchmark)
         run_benchmark(benchmark)
-        cleanup(
-            benchmark,
-            to_keep=[file for file in benchmark.iterdir() if "uv" not in file.name],
-        )
+        clean()
+
+
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--clean", action="store_true", help="Clean up compiled benchmarks"
+    )
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    if args.clean:
+        clean()
+    else:
+        main()
