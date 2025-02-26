@@ -54,15 +54,15 @@ def compile_benchmark(benchmark_path: Path) -> None:
         f.write(original_contents)
 
 
-def run_benchmark(benchmark_path: Path, iterations: int = 50) -> None:
+def run_benchmark(benchmark_path: Path, iters: str = "100") -> None:
     with temporary_directory_change(benchmark_path):
         command = [
             "hyperfine",
             "--show-output",
             "--warmup",
-            "50",
+            iters,
             "--min-runs",
-            str(iterations),
+            iters,
             "./run_benchmark.bin",
             ".venv/bin/python run_benchmark.py",
         ]

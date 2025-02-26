@@ -10,6 +10,8 @@ from typing import Any, Callable, Iterator
 import subprocess
 import sys
 from rich.console import Console
+from argparse import ArgumentParser
+
 
 
 console = Console()
@@ -169,3 +171,11 @@ def get_benchmarks(bechmark_dir: Path) -> Iterator[Path]:
         if not benchmark_case.is_dir() or not benchmark_case.name.startswith("bm_"):
             continue
         yield benchmark_case
+
+
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument(
+        "--clean", action="store_true", help="Clean up compiled benchmarks"
+    )
+    return parser.parse_args()
