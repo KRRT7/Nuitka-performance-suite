@@ -4,8 +4,18 @@ from rich.progress import track
 from pathlib import Path
 
 
-def main():
-    benchmarks = list(get_benchmarks(Path.cwd() / "benchmarks"))
+def main(benchmarks=None):
+    _benchmarks = list(get_benchmarks(Path.cwd() / "benchmarks"))
+    if benchmarks:
+        _benchmarks = [
+            b
+            for b in _benchmarks
+            if any(benchmark in b.name for benchmark in benchmarks)
+        ]
+
+    benchmarks = _benchmarks
+
+    console.print(f"Running benchmarks: {benchmarks}")
     for benchmark in track(
         benchmarks,
         description="Compiling benchmarks",
@@ -25,4 +35,4 @@ if __name__ == "__main__":
     if args.clean:
         clean()
     else:
-        main()
+        main(args.benchmarks if args.benchmarks else None)

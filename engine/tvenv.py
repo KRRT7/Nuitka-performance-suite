@@ -37,13 +37,12 @@ def compile_benchmark(benchmark_path: Path) -> None:
 
         command += [
             "nuitka",
-            # "--onefile", # avoid onefile overhead
             "--lto=yes",
             "--remove-output",
             "--assume-yes-for-downloads",
             "--clang",
             "--disable-cache=all",
-            "--run",
+            # "--run",
             "run_benchmark.py",
         ]
         result = run_command_in_subprocess(command)
@@ -63,7 +62,7 @@ def run_benchmark(benchmark_path: Path, iters: str = "100") -> None:
             "--min-runs",
             iters,
             "./run_benchmark.bin",
-            ".venv/bin/python run_benchmark.py",
+            "./run_benchmark.sh",
         ]
         # command.append("run_benchmark.exe" if MS_WINDOWS else "./run_benchmark.bin") # for windows in the future
         result = run_command_in_subprocess(command)
