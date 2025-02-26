@@ -10,8 +10,7 @@ from typing import Any, Callable, Iterator
 import subprocess
 import sys
 from rich.console import Console
-from argparse import ArgumentParser
-
+from argparse import ArgumentParser, Namespace
 
 
 console = Console()
@@ -154,9 +153,15 @@ def temporary_directory_change(path: Path) -> Iterator[None]:
     yield
     os.chdir(current_directory)
 
+
 def clean() -> None:
     paths = Path.cwd().rglob("*")
-    keywords = {"uv", "run_benchmark.bin", "egg-info" "run_benchmark.bin"}
+    keywords = {
+        "uv",
+        "run_benchmark.bin",
+        "egg-inforun_benchmark.bin",
+        "run_benchmark.sh",
+    }
 
     for path in paths:
         name = path.name
@@ -166,6 +171,7 @@ def clean() -> None:
             elif path.is_file():
                 path.unlink()
 
+
 def get_benchmarks(bechmark_dir: Path) -> Iterator[Path]:
     for benchmark_case in bechmark_dir.iterdir():
         if not benchmark_case.is_dir() or not benchmark_case.name.startswith("bm_"):
@@ -173,9 +179,14 @@ def get_benchmarks(bechmark_dir: Path) -> Iterator[Path]:
         yield benchmark_case
 
 
-def parse_args():
+def parse_args() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument(
         "--clean", action="store_true", help="Clean up compiled benchmarks"
+    )
+    parser.add_argument(
+        "--benchmarks",
+        nargs="+",
+        help="Run only the specified benchmarks",
     )
     return parser.parse_args()
