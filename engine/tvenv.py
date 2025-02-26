@@ -1,11 +1,10 @@
 from pathlib import Path
-from rework.utils import (
+from engine.utils import (
     temporary_directory_change,
     run_command_in_subprocess,
-    MS_WINDOWS,
 )
 
-from rework.benchmark_prepare import prepare_benchmark_file
+from engine.benchmark_prepare import prepare_benchmark_file
 
 
 def compile_benchmark(benchmark_path: Path) -> None:
