@@ -38,7 +38,7 @@ def compile_benchmark(benchmark_path: Path) -> None:
 
         command += [
             "nuitka",
-            "--onefile",
+            # "--onefile", # avoid onefile overhead
             "--lto=yes",
             "--remove-output",
             "--assume-yes-for-downloads",
