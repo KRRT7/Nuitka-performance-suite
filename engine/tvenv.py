@@ -71,11 +71,10 @@ class Benchmark:
 
     def run(self, iters: str = "100") -> None:
         with temporary_directory_change(self.benchmark_path):
-            executable = (
-                "./run_benchmark.sh"
-                if self.requirements_exist
-                else "./run_benchmark.bin"
-            )
+            executable = "./run_benchmark.bin"
+            if self.requirements_exist:
+                executable = "./run_benchmark.sh"
+            
             command = [
                 "hyperfine",
                 "--show-output",

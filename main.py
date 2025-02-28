@@ -13,9 +13,8 @@ def main(benchmarks=None):
             if any(benchmark in b.name for benchmark in benchmarks)
         ]
 
-    benchmarks = _benchmarks
+    benchmarks = sorted(_benchmarks)
 
-    console.print(f"Running benchmarks: {benchmarks}")
     for benchmark_path in track(
         benchmarks,
         description="Compiling benchmarks",
