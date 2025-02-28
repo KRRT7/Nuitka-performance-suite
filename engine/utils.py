@@ -161,6 +161,7 @@ def clean() -> None:
         "run_benchmark.bin",
         "egg-inforun_benchmark.bin",
         "run_benchmark.sh",
+        "benchmark_results.json",
     }
 
     for path in paths:

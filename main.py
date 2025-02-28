@@ -27,6 +27,7 @@ def main(benchmarks=None):
 
         benchmark = Benchmark(benchmark_path)
         benchmark.execute()
+        benchmark.report()
 
     clean()
 
